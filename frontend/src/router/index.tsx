@@ -80,6 +80,11 @@ const routes: RouteObject[] = [
  * 创建路由配置
  */
 export const createRouter = () => {
-  return createBrowserRouter(routes);
+  // 开启 v7_startTransition 以消除 React Router 的未来版本警告
+  return createBrowserRouter(routes, {
+    future: {
+      v7_startTransition: true,
+    },
+  });
 };
 

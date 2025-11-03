@@ -11,11 +11,8 @@ interface LoadingProps {
 }
 
 const Loading: React.FC<LoadingProps> = ({ tip = '加载中...', size = 'default' }) => {
-  return (
-    <div className="loading-container">
-      <Spin size={size} tip={tip} />
-    </div>
-  );
+  // 使用 fullscreen 模式以启用 tip，避免 antd 警告
+  return <Spin fullscreen size={size} tip={tip} />;
 };
 
 export default Loading;
