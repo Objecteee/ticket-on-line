@@ -151,4 +151,25 @@ export const getUserById = async (id: number) => {
   return user;
 };
 
+export const deleteUserById = async (id: number, operatorId?: number) => {
+  // 不允许自我删除
+  if (operatorId && operatorId === id) {
+    throw new Error('不能删除当前登录账号');
+  }
+
+  const user = await User.findByPk(id);
+  if (!user) throw new Error('用户不存在');
+
+  // 如果删除管理员，确保至少保留一个管理员
+  if (user.role === 'admin') {
+    const adminCount = await User.count({ where: { role: 'admin', status: 1 } });
+    if (adminCount <= 1) {
+      throw new Error('至少需要保留一个管理员');
+    }
+  }
+
+  await user.destroy();
+  return true;
+};
+
 

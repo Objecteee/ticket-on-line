@@ -8,6 +8,8 @@ import Register from '@/pages/Register';
 import { useAuth } from '@/store/AuthContext';
 import Loading from '@/components/Loading';
 import AdminUserPage from '@/pages/Admin/UserManagement';
+import { getToken } from '@/utils/auth';
+import { decodeJwtPayload } from '@/utils/auth';
 
 /**
  * 路由守卫组件 - 需要登录
@@ -47,8 +49,25 @@ export const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ childr
 export const AdminRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
   if (loading) return <Loading />;
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role !== 'admin') return <Navigate to="/" replace />;
+  const token = getToken();
+  const roleFromToken: string | undefined = token ? decodeJwtPayload(token)?.role : undefined;
+  const isAdmin = (user?.role === 'admin') || (roleFromToken === 'admin');
+  const authed = isAuthenticated || !!token;
+  if (!authed) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
+  return children;
+};
+
+/** 仅普通用户可访问 */
+export const UserRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+  if (loading) return <Loading />;
+  const token = getToken();
+  const roleFromToken: string | undefined = token ? decodeJwtPayload(token)?.role : undefined;
+  const isUser = (user?.role === 'user') || (roleFromToken === 'user');
+  const authed = isAuthenticated || !!token;
+  if (!authed) return <Navigate to="/login" replace />;
+  if (!isUser) return <Navigate to="/" replace />;
   return children;
 };
 
@@ -81,7 +100,23 @@ const routes: RouteObject[] = [
     ),
   },
   {
+    path: '/user/home',
+    element: (
+      <UserRoute>
+        <div>用户首页（待实现）</div>
+      </UserRoute>
+    ),
+  },
+  {
     path: '/admin/users',
+    element: (
+      <AdminRoute>
+        <AdminUserPage />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: '/admin/users/',
     element: (
       <AdminRoute>
         <AdminUserPage />
@@ -98,11 +133,6 @@ const routes: RouteObject[] = [
  * 创建路由配置
  */
 export const createRouter = () => {
-  // 开启 v7_startTransition 以消除 React Router 的未来版本警告
-  return createBrowserRouter(routes, {
-    future: {
-      v7_startTransition: true,
-    },
-  });
+  return createBrowserRouter(routes);
 };
 

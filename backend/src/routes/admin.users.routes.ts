@@ -35,6 +35,8 @@ router.patch('/users/:userId/status', validate(updateStatusValidator), controlle
 router.patch('/users/:userId/role', validate(updateRoleValidator), controller.updateRole);
 // 重置密码
 router.post('/users/:userId/reset-password', validate(resetPasswordValidator), controller.resetPassword);
+// 删除用户
+router.delete('/users/:userId', validate(idParamValidator), controller.remove);
 
 export default router;
 

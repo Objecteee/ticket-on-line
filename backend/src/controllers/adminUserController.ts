@@ -10,6 +10,7 @@ import {
   setUserRole,
   resetUserPassword,
   getUserById,
+  deleteUserById,
 } from '../services/userService';
 import { ApiResponse } from '../types';
 
@@ -96,6 +97,18 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     const { password } = req.body as any;
     await resetUserPassword(Number(userId), password);
     const response: ApiResponse = { code: 200, message: '密码已重置' };
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const remove = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.params as any;
+    const operatorId = (req as any).user?.userId as number | undefined;
+    await deleteUserById(Number(userId), operatorId);
+    const response: ApiResponse = { code: 200, message: '删除成功' };
     res.json(response);
   } catch (e) {
     next(e);

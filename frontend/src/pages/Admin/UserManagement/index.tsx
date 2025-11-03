@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Form, Input, Select, Space, Table, Tag, App, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Form, Input, Select, Space, Table, Tag, App, Modal, Popconfirm, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { fetchUsers, createUser, updateUser, updateUserStatus, updateUserRole, resetUserPassword } from '@/api/admin';
+import { fetchUsers, createUser, updateUser, updateUserStatus, updateUserRole, resetUserPassword, deleteUser } from '@/api/admin';
 import { User } from '@/types/user';
 
 const { confirm } = Modal;
@@ -9,13 +9,17 @@ const { confirm } = Modal;
 const UserManagement: React.FC = () => {
   const { message, modal } = App.useApp();
   const [form] = Form.useForm();
+  const [createForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [pwdForm] = Form.useForm();
+  const [createOpen, setCreateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
 
   const loadData = async () => {
     setLoading(true);
@@ -23,8 +27,8 @@ const UserManagement: React.FC = () => {
       const { data } = await fetchUsers({ page, pageSize, ...filters });
       setDataSource(data.list);
       setTotal(data.total);
-    } catch (e: any) {
-      message.error(e.message || '加载失败');
+    } catch (e) {
+      message.error((e as Error).message || '加载失败');
     } finally {
       setLoading(false);
     }
@@ -55,7 +59,7 @@ const UserManagement: React.FC = () => {
     {
       title: '操作',
       fixed: 'right',
-      width: 320,
+      width: 420,
       render: (_, record) => (
         <Space size={8} wrap>
           <Button type="link" onClick={() => onEdit(record)}>编辑</Button>
@@ -65,7 +69,17 @@ const UserManagement: React.FC = () => {
           <Button type="link" onClick={() => onToggleStatus(record)}>
             {record.status === 1 ? '禁用' : '启用'}
           </Button>
-          <Button type="link" danger onClick={() => onResetPassword(record)}>重置密码</Button>
+          <Button type="link" onClick={() => onResetPassword(record)}>重置密码</Button>
+          <Popconfirm
+            title={`删除用户：${record.username}`}
+            description="该操作不可恢复，确认删除？"
+            okText="删除"
+            okButtonProps={{ danger: true }}
+            cancelText="取消"
+            onConfirm={() => onDelete(record)}
+          >
+            <Button type="link" danger>删除</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -78,59 +92,31 @@ const UserManagement: React.FC = () => {
   };
 
   const onCreate = () => {
-    let modalIns: any;
-    const formIns = Form.useFormInstance?.() as any;
-    modalIns = modal.confirm({
-      title: '创建用户',
-      icon: null,
-      content: (
-        <Form layout="vertical" form={formIns} initialValues={{ role: 'user', status: 1 }}>
-          <Form.Item name="username" label="用户名" rules={[{ required: true }, { min: 3, max: 20 }]}>
-            <Input placeholder="用户名" allowClear />
-          </Form.Item>
-          <Form.Item name="password" label="密码" rules={[{ required: true }, { min: 6, max: 20 }]}>
-            <Input.Password placeholder="初始密码" allowClear />
-          </Form.Item>
-          <Form.Item name="email" label="邮箱" rules={[{ type: 'email', warningOnly: true }]}>
-            <Input placeholder="邮箱（可选）" allowClear />
-          </Form.Item>
-          <Form.Item name="phone" label="手机号" rules={[{ pattern: /^1[3-9]\d{9}$/ }]}>
-            <Input placeholder="手机号（可选）" allowClear />
-          </Form.Item>
-          <Form.Item name="role" label="角色">
-            <Select options={[{ value: 'user', label: '用户' }, { value: 'admin', label: '管理员' }]} />
-          </Form.Item>
-          <Form.Item name="status" label="状态">
-            <Select options={[{ value: 1, label: '启用' }, { value: 0, label: '禁用' }]} />
-          </Form.Item>
-        </Form>
-      ),
-      okText: '创建',
-      cancelText: '取消',
-      onOk: async () => {
-        try {
-          const values = await (formIns as any).validateFields();
-          await createUser(values);
-          message.success('创建成功');
-          await loadData();
-        } catch {
-          return Promise.reject();
-        }
-      },
-    });
+    createForm.resetFields();
+    createForm.setFieldsValue({ role: 'user', status: 1 });
+    setCreateOpen(true);
+  };
+
+  const handleCreateOk = async () => {
+    try {
+      const values = await createForm.validateFields();
+      await createUser(values);
+      message.success('创建成功');
+      setCreateOpen(false);
+      await loadData();
+    } catch (e) {
+      // 校验失败保持弹窗
+    }
   };
 
   const onEdit = (record: User) => {
-    let formRef: any;
+    editForm.resetFields();
+    editForm.setFieldsValue({ email: record.email, phone: record.phone, status: record.status, role: record.role });
     modal.confirm({
       title: `编辑用户：${record.username}`,
       icon: null,
       content: (
-        <Form
-          layout="vertical"
-          initialValues={{ email: record.email, phone: record.phone, status: record.status, role: record.role }}
-          ref={(node) => (formRef = node)}
-        >
+        <Form layout="vertical" form={editForm}>
           <Form.Item name="email" label="邮箱" rules={[{ type: 'email', warningOnly: true }]}>
             <Input placeholder="邮箱（可选）" allowClear />
           </Form.Item>
@@ -149,7 +135,7 @@ const UserManagement: React.FC = () => {
       cancelText: '取消',
       onOk: async () => {
         try {
-          const values = await (formRef as any).validateFields();
+          const values = await editForm.validateFields();
           await updateUser(record.id, values);
           message.success('保存成功');
           await loadData();
@@ -185,12 +171,12 @@ const UserManagement: React.FC = () => {
   };
 
   const onResetPassword = (record: User) => {
-    let fp: any;
+    pwdForm.resetFields();
     modal.confirm({
       title: `重置密码：${record.username}`,
       icon: null,
       content: (
-        <Form layout="vertical" ref={(n) => (fp = n)}>
+        <Form layout="vertical" form={pwdForm}>
           <Form.Item name="password" label="新密码" rules={[{ required: true }, { min: 6, max: 20 }]}>
             <Input.Password placeholder="请输入新密码" />
           </Form.Item>
@@ -200,7 +186,7 @@ const UserManagement: React.FC = () => {
       cancelText: '取消',
       onOk: async () => {
         try {
-          const values = await (fp as any).validateFields();
+          const values = await pwdForm.validateFields();
           await resetUserPassword(record.id, values.password);
           message.success('密码已重置');
         } catch {
@@ -210,11 +196,22 @@ const UserManagement: React.FC = () => {
     });
   };
 
+  const onDelete = async (record: User) => {
+    try {
+      await deleteUser(record.id);
+      message.success('删除成功');
+      await loadData();
+    } catch (e) {
+      message.error((e as Error).message || '删除失败');
+    }
+  };
+
   return (
     <Card
-      title="用户管理"
+      title={<Typography.Title level={4} style={{ margin: 0 }}>用户管理</Typography.Title>}
       extra={<Button type="primary" onClick={onCreate}>新建用户</Button>}
-      styles={{ body: { paddingTop: 8 } as any }}
+      styles={{ body: { paddingTop: 8 } }}
+      bordered={false}
     >
       <Form
         form={form}
@@ -253,8 +250,45 @@ const UserManagement: React.FC = () => {
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
           showTotal: (t) => `共 ${t} 条`,
         }}
-        scroll={{ x: 900 }}
+        size="middle"
+        bordered={false}
+        scroll={{ x: 960 }}
       />
+
+      <Modal
+        title="创建用户"
+        open={createOpen}
+        onOk={handleCreateOk}
+        onCancel={() => setCreateOpen(false)}
+        okText="创建"
+        cancelText="取消"
+        destroyOnClose
+      >
+        <Form layout="vertical" form={createForm} preserve={false}>
+          <Form.Item name="username" label="用户名" rules={[{ required: true }, { min: 3, max: 20 }]}>
+            <Input placeholder="用户名" allowClear />
+          </Form.Item>
+          <Form.Item name="password" label="密码" rules={[{ required: true }, { min: 6, max: 20 }]}>
+            <Input.Password placeholder="初始密码" allowClear />
+          </Form.Item>
+          <Form.Item name="email" label="邮箱" rules={[{ type: 'email', warningOnly: true }]}>
+            <Input placeholder="邮箱（可选）" allowClear />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="手机号"
+            rules={[{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号码' }]}
+          >
+            <Input placeholder="手机号（可选）" allowClear />
+          </Form.Item>
+          <Form.Item name="role" label="角色" initialValue="user">
+            <Select options={[{ value: 'user', label: '用户' }, { value: 'admin', label: '管理员' }]} />
+          </Form.Item>
+          <Form.Item name="status" label="状态" initialValue={1}>
+            <Select options={[{ value: 1, label: '启用' }, { value: 0, label: '禁用' }]} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Card>
   );
 };

@@ -68,3 +68,23 @@ export const isAuthenticated = (): boolean => {
   return !!getToken();
 };
 
+/**
+ * 解码JWT获取载荷（不校验签名，仅用于前端角色显示）
+ */
+export const decodeJwtPayload = (token: string): any | null => {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(payload)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
+

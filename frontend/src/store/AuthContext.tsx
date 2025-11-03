@@ -3,7 +3,7 @@
  */
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types/user';
-import { getToken, getUser, setToken, setUser, clearAuth } from '@/utils/auth';
+import { getToken, getUser, setToken, setUser, clearAuth, decodeJwtPayload } from '@/utils/auth';
 import { login as loginApi, register as registerApi } from '@/api/auth';
 import { message } from 'antd';
 
@@ -32,8 +32,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = getToken();
       const userData = getUser();
       
-      if (token && userData) {
-        setUserState(userData);
+      if (token) {
+        if (userData) {
+          setUserState(userData);
+        } else {
+          // 回退：从JWT解码最小信息，避免刷新后角色丢失导致权限误判
+          const payload = decodeJwtPayload(token);
+          if (payload?.userId && payload?.username && payload?.role) {
+            setUserState({
+              id: payload.userId,
+              username: payload.username,
+              role: payload.role,
+              status: 1,
+            } as any);
+          }
+        }
       }
       setLoading(false);
     };

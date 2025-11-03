@@ -39,4 +39,7 @@ export const updateUserRole = (userId: number, role: 'user' | 'admin') =>
 export const resetUserPassword = (userId: number, password: string) =>
   request.post(`/admin/users/${userId}/reset-password`, { password });
 
+export const deleteUser = (userId: number) =>
+  request.delete(`/admin/users/${userId}`);
+
 
