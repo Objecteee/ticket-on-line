@@ -8,6 +8,7 @@ import Register from '@/pages/Register';
 import { useAuth } from '@/store/AuthContext';
 import Loading from '@/components/Loading';
 import AdminUserPage from '@/pages/Admin/UserManagement';
+import AdminTrainPage from '@/pages/Admin/TrainManagement';
 import { getToken } from '@/utils/auth';
 import { decodeJwtPayload } from '@/utils/auth';
 
@@ -120,6 +121,14 @@ const routes: RouteObject[] = [
     element: (
       <AdminRoute>
         <AdminUserPage />
+      </AdminRoute>
+    ),
+  },
+  {
+    path: '/admin/trains',
+    element: (
+      <AdminRoute>
+        <AdminTrainPage />
       </AdminRoute>
     ),
   },

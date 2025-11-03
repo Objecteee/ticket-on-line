@@ -6,6 +6,7 @@ import { env } from './config/env';
 import { testConnection } from './config/database';
 import User from './models/User';
 import { seedAdmin } from './seeds/seedAdmin';
+import Train from './models/Train';
 
 const PORT = env.PORT;
 
@@ -19,7 +20,8 @@ const startServer = async (): Promise<void> => {
 
     // 同步数据库模型（开发环境）
     if (env.NODE_ENV === 'development') {
-      await User.sync({ alter: false }); // alter: false 表示不修改现有表结构
+      await User.sync({ alter: false });
+      await Train.sync({ alter: false });
       console.log('✅ 数据库模型已同步');
 
       // 初始化管理员账号（仅开发环境）

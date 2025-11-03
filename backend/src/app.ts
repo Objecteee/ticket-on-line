@@ -7,6 +7,7 @@ import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
 import adminUsersRoutes from './routes/admin.users.routes';
+import adminTrainsRoutes from './routes/admin.trains.routes';
 
 const app: Application = express();
 
@@ -30,6 +31,7 @@ app.get('/health', (req, res) => {
 // API路由
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminUsersRoutes);
+app.use('/api/admin', adminTrainsRoutes);
 
 // 404处理
 app.use(notFoundHandler);
