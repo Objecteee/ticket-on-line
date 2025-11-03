@@ -7,8 +7,14 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import { useAuth } from '@/store/AuthContext';
 import Loading from '@/components/Loading';
+import AdminLayout from '@/components/Layout/AdminLayout';
+import AdminDashboardPage from '@/pages/Admin/Dashboard';
 import AdminUserPage from '@/pages/Admin/UserManagement';
 import AdminTrainPage from '@/pages/Admin/TrainManagement';
+import AdminTicketSalesPage from '@/pages/Admin/TicketSales';
+import AdminOrdersPage from '@/pages/Admin/Orders';
+import AdminRefundsPage from '@/pages/Admin/Refunds';
+import AdminStatisticsPage from '@/pages/Admin/Statistics';
 import { getToken } from '@/utils/auth';
 import { decodeJwtPayload } from '@/utils/auth';
 
@@ -96,7 +102,7 @@ const routes: RouteObject[] = [
     path: '/',
     element: (
       <ProtectedRoute>
-        <div>首页（待实现）</div>
+        <Navigate to="/admin" replace />
       </ProtectedRoute>
     ),
   },
@@ -109,28 +115,21 @@ const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/admin/users',
+    path: '/admin',
     element: (
       <AdminRoute>
-        <AdminUserPage />
+        <AdminLayout />
       </AdminRoute>
     ),
-  },
-  {
-    path: '/admin/users/',
-    element: (
-      <AdminRoute>
-        <AdminUserPage />
-      </AdminRoute>
-    ),
-  },
-  {
-    path: '/admin/trains',
-    element: (
-      <AdminRoute>
-        <AdminTrainPage />
-      </AdminRoute>
-    ),
+    children: [
+      { index: true, element: <AdminDashboardPage /> },
+      { path: 'users', element: <AdminUserPage /> },
+      { path: 'trains', element: <AdminTrainPage /> },
+      { path: 'ticket-sales', element: <AdminTicketSalesPage /> },
+      { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'refunds', element: <AdminRefundsPage /> },
+      { path: 'statistics', element: <AdminStatisticsPage /> },
+    ],
   },
   {
     path: '*',

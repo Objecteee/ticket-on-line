@@ -7,6 +7,10 @@ import { testConnection } from './config/database';
 import User from './models/User';
 import { seedAdmin } from './seeds/seedAdmin';
 import Train from './models/Train';
+import Order from './models/Order';
+import TicketSale from './models/TicketSale';
+import Refund from './models/Refund';
+import TicketInventory from './models/TicketInventory';
 
 const PORT = env.PORT;
 
@@ -22,6 +26,10 @@ const startServer = async (): Promise<void> => {
     if (env.NODE_ENV === 'development') {
       await User.sync({ alter: false });
       await Train.sync({ alter: false });
+      await Order.sync({ alter: false });
+      await TicketSale.sync({ alter: false });
+      await Refund.sync({ alter: false });
+      await TicketInventory.sync({ alter: false });
       console.log('✅ 数据库模型已同步');
 
       // 初始化管理员账号（仅开发环境）
