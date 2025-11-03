@@ -6,6 +6,7 @@ import cors from 'cors';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
+import adminUsersRoutes from './routes/admin.users.routes';
 
 const app: Application = express();
 
@@ -28,6 +29,7 @@ app.get('/health', (req, res) => {
 
 // API路由
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminUsersRoutes);
 
 // 404处理
 app.use(notFoundHandler);

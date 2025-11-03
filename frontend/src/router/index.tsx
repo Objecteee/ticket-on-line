@@ -7,6 +7,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import { useAuth } from '@/store/AuthContext';
 import Loading from '@/components/Loading';
+import AdminUserPage from '@/pages/Admin/UserManagement';
 
 /**
  * 路由守卫组件 - 需要登录
@@ -42,6 +43,15 @@ export const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ childr
   return children;
 };
 
+/** 仅管理员可访问 */
+export const AdminRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+  if (loading) return <Loading />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
+};
+
 /**
  * 路由配置数组
  */
@@ -68,6 +78,14 @@ const routes: RouteObject[] = [
       <ProtectedRoute>
         <div>首页（待实现）</div>
       </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/users',
+    element: (
+      <AdminRoute>
+        <AdminUserPage />
+      </AdminRoute>
     ),
   },
   {
