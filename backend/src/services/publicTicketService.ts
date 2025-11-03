@@ -158,4 +158,52 @@ export const searchTickets = async (params: TicketSearchParams) => {
   return result;
 };
 
+export const getTicketDetail = async (params: { train_id: number; date: string; from: string; to: string }) => {
+  const { train_id, date, from, to } = params;
+  const train = await Train.findByPk(train_id);
+  if (!train || train.status !== 1) throw new Error('车次不存在或不可售');
+
+  const fromStops = await TrainStop.findAll({ where: { train_id, station_name: { [Op.like]: `%${from}%` } }, order: [['stop_order', 'ASC']] });
+  const toStops = await TrainStop.findAll({ where: { train_id, station_name: { [Op.like]: `%${to}%` } }, order: [['stop_order', 'ASC']] });
+  if (!fromStops.length || !toStops.length) throw new Error('未找到对应区段');
+  const pair = (() => {
+    for (const f of fromStops) {
+      const t = toStops.find(x => x.stop_order > f.stop_order);
+      if (t) return { f, t };
+    }
+    return undefined;
+  })();
+  if (!pair) throw new Error('区段不合法');
+
+  const seats: Array<{ seat_type: 'business'|'first'|'second'; price: string; available: number }> = [];
+  const seatTypes: Array<'business'|'first'|'second'> = ['business','first','second'];
+  for (const st of seatTypes) {
+    let total = 0; let price = 0;
+    if (st === 'business') { total = train.total_seats_business; price = Number(train.price_business); }
+    if (st === 'first')    { total = train.total_seats_first;    price = Number(train.price_first); }
+    if (st === 'second')   { total = train.total_seats_second;   price = Number(train.price_second); }
+    if (total <= 0 || price <= 0) { seats.push({ seat_type: st, price: '0.00', available: 0 }); continue; }
+
+    let available = 0;
+    const inv = await TicketInventory.findOne({ where: { train_id, travel_date: date, seat_type: st } });
+    if (inv) {
+      available = Math.max(0, inv.total_seats - inv.sold_seats - inv.locked_seats);
+    } else {
+      const paid = await Order.sum('ticket_count', { where: { train_id, travel_date: date, seat_type: st, order_status: { [Op.in]: ['paid', 'completed'] } } }) as number | null;
+      available = Math.max(0, total - (paid || 0));
+    }
+    seats.push({ seat_type: st, price: price.toFixed(2), available });
+  }
+
+  return {
+    train_id: train.id,
+    train_number: train.train_number,
+    departure_station: pair.f.station_name,
+    arrival_station: pair.t.station_name,
+    departure_time: pair.f.departure_time,
+    arrival_time: pair.t.arrival_time,
+    seats,
+  };
+};
+
 

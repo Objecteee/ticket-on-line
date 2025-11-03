@@ -1,0 +1,68 @@
+.homePage {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .welcomeSection {
+    text-align: center;
+    padding: 48px 0 64px;
+  }
+
+  .cardGrid {
+    margin-top: 24px;
+  }
+
+  .menuCard {
+    height: 100%;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .cardContent {
+      text-align: center;
+      padding: 24px 16px;
+
+      .iconWrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 24px;
+        border: 2px solid;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .cardTitle {
+        margin: 0 0 12px;
+        font-weight: 500;
+      }
+
+      .cardDesc {
+        display: block;
+        margin-bottom: 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 44px;
+      }
+
+      .cardAction {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+    }
+
+    &:hover .iconWrapper {
+      transform: scale(1.1);
+    }
+  }
+}
+

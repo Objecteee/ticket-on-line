@@ -8,6 +8,7 @@ import Register from '@/pages/Register';
 import { useAuth } from '@/store/AuthContext';
 import Loading from '@/components/Loading';
 import AdminLayout from '@/components/Layout/AdminLayout';
+import UserLayout from '@/components/Layout/UserLayout';
 import AdminDashboardPage from '@/pages/Admin/Dashboard';
 import AdminUserPage from '@/pages/Admin/UserManagement';
 import AdminTrainPage from '@/pages/Admin/TrainManagement';
@@ -15,7 +16,15 @@ import AdminTicketSalesPage from '@/pages/Admin/TicketSales';
 import AdminOrdersPage from '@/pages/Admin/Orders';
 import AdminRefundsPage from '@/pages/Admin/Refunds';
 import AdminStatisticsPage from '@/pages/Admin/Statistics';
+import UserHomePage from '@/pages/User/Home';
 import UserTicketSearchPage from '@/pages/User/TicketSearch';
+import UserBookPage from '@/pages/User/Book';
+import UserOrdersPage from '@/pages/User/Orders';
+import UserPassengersPage from '@/pages/User/Passengers';
+import ResetPasswordPage from '@/pages/User/Account/ResetPassword';
+import UserProfilePage from '@/pages/User/Profile';
+import UserMessagesPage from '@/pages/User/Messages';
+import AdminMessagesPage from '@/pages/Admin/Messages';
 import { getToken } from '@/utils/auth';
 import { decodeJwtPayload } from '@/utils/auth';
 
@@ -103,17 +112,35 @@ const routes: RouteObject[] = [
     path: '/',
     element: (
       <ProtectedRoute>
-        <Navigate to="/admin" replace />
+        <Navigate to="/user/home" replace />
       </ProtectedRoute>
     ),
   },
   {
-    path: '/user/home',
+    path: '/forgot-password',
+    element: (
+      <PublicRoute>
+        <ResetPasswordPage />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: '/user',
     element: (
       <UserRoute>
-        <UserTicketSearchPage />
+        <UserLayout />
       </UserRoute>
     ),
+    children: [
+      { index: true, element: <Navigate to="/user/home" replace /> },
+      { path: 'home', element: <UserHomePage /> },
+      { path: 'ticket-search', element: <UserTicketSearchPage /> },
+      { path: 'book', element: <UserBookPage /> },
+      { path: 'orders', element: <UserOrdersPage /> },
+      { path: 'passengers', element: <UserPassengersPage /> },
+      { path: 'profile', element: <UserProfilePage /> },
+      { path: 'messages', element: <UserMessagesPage /> },
+    ],
   },
   {
     path: '/admin',
@@ -130,6 +157,7 @@ const routes: RouteObject[] = [
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'refunds', element: <AdminRefundsPage /> },
       { path: 'statistics', element: <AdminStatisticsPage /> },
+      { path: 'messages', element: <AdminMessagesPage /> },
     ],
   },
   {

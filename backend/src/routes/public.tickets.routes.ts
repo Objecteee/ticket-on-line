@@ -13,6 +13,13 @@ router.get('/search', validate([
   query('seat_type').optional().isIn(['business', 'first', 'second']),
 ] as any), controller.search);
 
+router.get('/detail', validate([
+  query('train_id').isInt({ min: 1 }).toInt(),
+  query('date').isISO8601(),
+  query('from').isString(),
+  query('to').isString(),
+] as any), controller.detail);
+
 export default router;
 
 

@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import Order, { OrderStatus } from '../models/Order';
 import Refund from '../models/Refund';
+import TicketSale from '../models/TicketSale';
 import { replenishOnRefund } from './inventoryService';
 
 export interface OrderListParams {
@@ -39,6 +40,32 @@ export const cancelOrder = async (id: number) => {
   if (!order) throw new Error('订单不存在');
   if (order.order_status === 'cancelled' || order.order_status === 'refunded') return order;
   await order.update({ order_status: 'cancelled' });
+
+  // 回补库存
+  try {
+    await replenishOnRefund(order.train_id, order.travel_date, order.seat_type, order.ticket_count);
+  } catch {
+    // 忽略库存回补失败
+  }
+
+  // 生成负向售票记录（抵消原销量）
+  try {
+    const originalSale = await TicketSale.findOne({ where: { order_id: order.id } });
+    const dest = originalSale?.destination || '';
+    const negativeAmount = (-1 * parseFloat(order.total_amount as unknown as string)).toFixed(2);
+    await TicketSale.create({
+      sale_date: order.travel_date,
+      train_id: order.train_id,
+      train_number: order.train_number,
+      destination: dest,
+      seat_type: order.seat_type,
+      ticket_count: -order.ticket_count,
+      actual_amount: negativeAmount,
+      order_id: order.id,
+    } as any);
+  } catch {
+    // 忽略失败，不阻断取消流程
+  }
   return order;
 };
 
@@ -84,6 +111,25 @@ export const refundOrder = async (id: number, params: RefundOrderParams) => {
     await replenishOnRefund(order.train_id, order.travel_date, order.seat_type, order.ticket_count);
   } catch {
     // 忽略库存回补失败，不影响退款主流程；可补日志
+  }
+
+  // 生成负向售票记录用于统计抵消（按退款额回冲：总额-手续费）
+  try {
+    const originalSale = await TicketSale.findOne({ where: { order_id: order.id } });
+    const dest = params.destination || originalSale?.destination || '';
+    const negativeAmount = (-1 * refund_amount).toFixed(2);
+    await TicketSale.create({
+      sale_date: order.travel_date,
+      train_id: order.train_id,
+      train_number: order.train_number,
+      destination: dest,
+      seat_type: order.seat_type,
+      ticket_count: -order.ticket_count,
+      actual_amount: negativeAmount,
+      order_id: order.id,
+    } as any);
+  } catch {
+    // 保底不阻断退款流程
   }
 
   return order;

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Layout, Menu, Breadcrumb, Button, Space, Typography } from 'antd';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { DashboardOutlined, UserOutlined, ScheduleOutlined, ShoppingOutlined, ProfileOutlined, BarChartOutlined, LogoutOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UserOutlined, ScheduleOutlined, ShoppingOutlined, ProfileOutlined, BarChartOutlined, LogoutOutlined, ArrowLeftOutlined, MessageOutlined } from '@ant-design/icons';
 import { useAuth } from '@/store/AuthContext';
 
 const { Header, Sider, Content } = Layout;
@@ -14,6 +14,7 @@ const routesMeta: Record<string, { title: string; path: string }> = {
   '/admin/orders': { title: '订单管理', path: '/admin/orders' },
   '/admin/refunds': { title: '退票管理', path: '/admin/refunds' },
   '/admin/statistics': { title: '数据统计', path: '/admin/statistics' },
+  '/admin/messages': { title: '留言管理', path: '/admin/messages' },
 };
 
 const AdminLayout: React.FC = () => {
@@ -57,6 +58,7 @@ const AdminLayout: React.FC = () => {
             { key: '/admin/ticket-sales', icon: <ShoppingOutlined />, label: '售票管理', onClick: () => navigate('/admin/ticket-sales') },
             { key: '/admin/orders', icon: <ProfileOutlined />, label: '订单管理', onClick: () => navigate('/admin/orders') },
             { key: '/admin/refunds', icon: <ProfileOutlined />, label: '退票管理', onClick: () => navigate('/admin/refunds') },
+            { key: '/admin/messages', icon: <MessageOutlined />, label: '留言管理', onClick: () => navigate('/admin/messages') },
             { key: '/admin/statistics', icon: <BarChartOutlined />, label: '数据统计', onClick: () => navigate('/admin/statistics') },
           ]}
         />

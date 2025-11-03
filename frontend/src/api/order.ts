@@ -43,4 +43,17 @@ export const cancelOrder = (orderId: number) =>
 export const refundOrder = (orderId: number, data: { service_fee_rate: number; refund_reason?: string; destination?: string; route?: string; vehicle_type?: string; }) =>
   request.post(`/admin/orders/${orderId}/refund`, data);
 
+// 用户下单（公开订单接口）
+export const createOrder = (data: {
+  train_id: number;
+  date: string;
+  from: string;
+  to: string;
+  seat_type: 'business' | 'first' | 'second';
+  count?: number;
+  passengers?: Array<{ name: string; id_card: string }>;
+  passenger_name?: string;
+  passenger_id_card?: string;
+}) => request.post('/orders', data);
+
 

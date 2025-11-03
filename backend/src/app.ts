@@ -14,6 +14,12 @@ import adminOrdersRoutes from './routes/admin.orders.routes';
 import adminRefundsRoutes from './routes/admin.refunds.routes';
 import adminStatisticsRoutes from './routes/admin.statistics.routes';
 import publicTicketsRoutes from './routes/public.tickets.routes';
+import userOrdersRoutes from './routes/user.orders.routes';
+import userPassengersRoutes from './routes/user.passengers.routes';
+import userProfileRoutes from './routes/user.profile.routes';
+import userMessagesRoutes from './routes/user.messages.routes';
+import publicOrdersRoutes from './routes/public.orders.routes';
+import adminMessagesRoutes from './routes/admin.messages.routes';
 
 const app: Application = express();
 
@@ -37,6 +43,11 @@ app.get('/health', (req, res) => {
 // API路由
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', publicTicketsRoutes);
+app.use('/api/user/orders', userOrdersRoutes);
+app.use('/api/user/passengers', userPassengersRoutes);
+app.use('/api/user/profile', userProfileRoutes);
+app.use('/api/user/messages', userMessagesRoutes);
+app.use('/api/orders', publicOrdersRoutes);
 app.use('/api/admin', adminUsersRoutes);
 app.use('/api/admin', adminTrainsRoutes);
 app.use('/api/admin', adminTrainStopsRoutes);
@@ -44,6 +55,7 @@ app.use('/api/admin', adminTicketSalesRoutes);
 app.use('/api/admin', adminOrdersRoutes);
 app.use('/api/admin', adminRefundsRoutes);
 app.use('/api/admin', adminStatisticsRoutes);
+app.use('/api/admin', adminMessagesRoutes);
 
 // 404处理
 app.use(notFoundHandler);

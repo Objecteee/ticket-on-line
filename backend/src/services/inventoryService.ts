@@ -21,4 +21,23 @@ export const replenishOnRefund = async (train_id: number, travel_date: string, s
   return true;
 };
 
+export const reserveOnOrder = async (train_id: number, travel_date: string, seat_type: string, count: number) => {
+  const t = await Train.findByPk(train_id);
+  if (!t) throw new Error('车次不存在');
+  let total = 0;
+  if (seat_type === 'business') total = t.total_seats_business;
+  else if (seat_type === 'first') total = t.total_seats_first;
+  else if (seat_type === 'second') total = t.total_seats_second;
+  const inv = await TicketInventory.findOne({ where: { train_id, travel_date, seat_type } });
+  if (!inv) {
+    if (count > total) throw new Error('余票不足');
+    await TicketInventory.create({ train_id, travel_date, seat_type, total_seats: total, sold_seats: count, locked_seats: 0 });
+    return true;
+  }
+  const available = Math.max(0, inv.total_seats - inv.sold_seats - inv.locked_seats);
+  if (available < count) throw new Error('余票不足');
+  await inv.update({ sold_seats: inv.sold_seats + count });
+  return true;
+};
+
 
