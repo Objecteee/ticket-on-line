@@ -15,6 +15,7 @@ import AdminTicketSalesPage from '@/pages/Admin/TicketSales';
 import AdminOrdersPage from '@/pages/Admin/Orders';
 import AdminRefundsPage from '@/pages/Admin/Refunds';
 import AdminStatisticsPage from '@/pages/Admin/Statistics';
+import UserTicketSearchPage from '@/pages/User/TicketSearch';
 import { getToken } from '@/utils/auth';
 import { decodeJwtPayload } from '@/utils/auth';
 
@@ -110,7 +111,7 @@ const routes: RouteObject[] = [
     path: '/user/home',
     element: (
       <UserRoute>
-        <div>用户首页（待实现）</div>
+        <UserTicketSearchPage />
       </UserRoute>
     ),
   },

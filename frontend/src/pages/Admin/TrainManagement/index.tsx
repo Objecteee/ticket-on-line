@@ -3,6 +3,7 @@ import { App, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Select,
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { fetchTrains, createTrain, updateTrain, deleteTrain, type Train } from '@/api/train';
+import { getTrainStops, saveTrainStops, type TrainStopDTO } from '@/api/trainStop';
 
 const { Title } = Typography;
 
@@ -18,6 +19,9 @@ const TrainManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [stopModalOpen, setStopModalOpen] = useState(false);
+  const [currentTrain, setCurrentTrain] = useState<Train | null>(null);
+  const [stops, setStops] = useState<TrainStopDTO[]>([]);
 
   const loadData = async () => {
     setLoading(true);
@@ -55,6 +59,7 @@ const TrainManagement: React.FC = () => {
       render: (_, record) => (
         <Space size={8}>
           <Button type="link" onClick={() => onEdit(record)}>编辑</Button>
+          <Button type="link" onClick={() => onManageStops(record)}>管理站点</Button>
           <Popconfirm
             title={`删除车次：${record.train_number}`}
             description="确认删除？该操作不可恢复"
@@ -168,6 +173,58 @@ const TrainManagement: React.FC = () => {
     }
   };
 
+  const onManageStops = async (record: Train) => {
+    try {
+      setCurrentTrain(record);
+      const { data } = await getTrainStops(record.id);
+      const list: TrainStopDTO[] = (data || []).map((s: any) => ({
+        station_name: s.station_name,
+        stop_order: s.stop_order,
+        arrival_time: s.arrival_time,
+        departure_time: s.departure_time,
+      }));
+      setStops(list);
+      setStopModalOpen(true);
+    } catch (e) {
+      message.error((e as Error).message || '加载站点失败');
+    }
+  };
+
+  const addStop = () => {
+    const nextOrder = (stops[stops.length - 1]?.stop_order || 0) + 1;
+    setStops([...stops, { station_name: '', stop_order: nextOrder, arrival_time: '00:00:00', departure_time: '00:00:00' }]);
+  };
+
+  const removeStop = (index: number) => {
+    const next = stops.slice();
+    next.splice(index, 1);
+    setStops(next);
+  };
+
+  const updateStop = (index: number, key: keyof TrainStopDTO, value: any) => {
+    const next = stops.slice();
+    // 时间值可能是 dayjs 对象
+    if (key === 'arrival_time' || key === 'departure_time') {
+      value = dayjs(value).format('HH:mm:ss');
+    }
+    next[index] = { ...next[index], [key]: value } as TrainStopDTO;
+    setStops(next);
+  };
+
+  const handleSaveStops = async () => {
+    if (!currentTrain) return;
+    const normalized = stops
+      .map(s => ({ ...s, stop_order: Number(s.stop_order) }))
+      .sort((a, b) => a.stop_order - b.stop_order);
+    try {
+      await saveTrainStops(currentTrain.id, normalized);
+      message.success('站点已保存');
+      setStopModalOpen(false);
+    } catch (e) {
+      message.error((e as Error).message || '保存失败');
+    }
+  };
+
   return (
     <Card title={<Title level={4} style={{ margin: 0 }}>车次管理</Title>} bordered={false} extra={<Button type="primary" onClick={onCreate}>新建车次</Button>}>
       <Form form={filterForm} layout="inline" onFinish={onSearch} style={{ marginBottom: 12 }}>
@@ -248,6 +305,63 @@ const TrainManagement: React.FC = () => {
             <Select options={[{ value: 1, label: '运营' }, { value: 0, label: '停运' }]} />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title={currentTrain ? `管理站点 - ${currentTrain.train_number}` : '管理站点'}
+        open={stopModalOpen}
+        onCancel={() => setStopModalOpen(false)}
+        onOk={handleSaveStops}
+        okText="保存"
+        cancelText="取消"
+        width={720}
+      >
+        <Table
+          dataSource={stops.map((s, i) => ({ key: i, ...s }))}
+          pagination={false}
+          size="small"
+          columns={[
+            {
+              title: '序号',
+              dataIndex: 'stop_order',
+              width: 80,
+              render: (_: any, __: any, index: number) => (
+                <InputNumber min={1} value={stops[index]?.stop_order} onChange={(v) => updateStop(index, 'stop_order', v || 1)} />
+              ),
+            },
+            {
+              title: '站名',
+              dataIndex: 'station_name',
+              render: (_: any, __: any, index: number) => (
+                <Input value={stops[index]?.station_name} onChange={(e) => updateStop(index, 'station_name', e.target.value)} />
+              ),
+            },
+            {
+              title: '到达时间',
+              dataIndex: 'arrival_time',
+              render: (_: any, __: any, index: number) => (
+                <TimePicker value={dayjs(stops[index]?.arrival_time, 'HH:mm:ss')} format="HH:mm:ss" onChange={(v) => updateStop(index, 'arrival_time', v)} />
+              ),
+            },
+            {
+              title: '发车时间',
+              dataIndex: 'departure_time',
+              render: (_: any, __: any, index: number) => (
+                <TimePicker value={dayjs(stops[index]?.departure_time, 'HH:mm:ss')} format="HH:mm:ss" onChange={(v) => updateStop(index, 'departure_time', v)} />
+              ),
+            },
+            {
+              title: '操作',
+              width: 90,
+              render: (_: any, __: any, index: number) => (
+                <Button danger type="link" onClick={() => removeStop(index)}>删除</Button>
+              ),
+            },
+          ]}
+          footer={() => (
+            <Button onClick={addStop} type="dashed" block>新增站点</Button>
+          )}
+        />
       </Modal>
     </Card>
   );

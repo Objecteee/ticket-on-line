@@ -9,9 +9,11 @@ import authRoutes from './routes/auth.routes';
 import adminUsersRoutes from './routes/admin.users.routes';
 import adminTrainsRoutes from './routes/admin.trains.routes';
 import adminTicketSalesRoutes from './routes/admin.ticketSales.routes';
+import adminTrainStopsRoutes from './routes/admin.trainStops.routes';
 import adminOrdersRoutes from './routes/admin.orders.routes';
 import adminRefundsRoutes from './routes/admin.refunds.routes';
 import adminStatisticsRoutes from './routes/admin.statistics.routes';
+import publicTicketsRoutes from './routes/public.tickets.routes';
 
 const app: Application = express();
 
@@ -34,8 +36,10 @@ app.get('/health', (req, res) => {
 
 // API路由
 app.use('/api/auth', authRoutes);
+app.use('/api/tickets', publicTicketsRoutes);
 app.use('/api/admin', adminUsersRoutes);
 app.use('/api/admin', adminTrainsRoutes);
+app.use('/api/admin', adminTrainStopsRoutes);
 app.use('/api/admin', adminTicketSalesRoutes);
 app.use('/api/admin', adminOrdersRoutes);
 app.use('/api/admin', adminRefundsRoutes);

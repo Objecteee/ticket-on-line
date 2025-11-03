@@ -11,6 +11,7 @@ import Order from './models/Order';
 import TicketSale from './models/TicketSale';
 import Refund from './models/Refund';
 import TicketInventory from './models/TicketInventory';
+import TrainStop from './models/TrainStop';
 
 const PORT = env.PORT;
 
@@ -30,6 +31,7 @@ const startServer = async (): Promise<void> => {
       await TicketSale.sync({ alter: false });
       await Refund.sync({ alter: false });
       await TicketInventory.sync({ alter: false });
+      await TrainStop.sync({ alter: false });
       console.log('✅ 数据库模型已同步');
 
       // 初始化管理员账号（仅开发环境）
