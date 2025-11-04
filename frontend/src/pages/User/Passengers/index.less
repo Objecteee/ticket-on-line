@@ -1,0 +1,128 @@
+.passengers-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--apple-spacing-xxl);
+  text-align: center;
+  position: relative;
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--apple-text-primary);
+  margin: 0 0 var(--apple-spacing-sm);
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+}
+
+.page-subtitle {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--apple-text-secondary);
+  margin: 0 0 var(--apple-spacing-lg);
+  
+  @media (max-width: 768px) {
+    font-size: 17px;
+  }
+}
+
+.header-action {
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.passengers-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--apple-spacing-md);
+}
+
+.passenger-card {
+  padding: var(--apple-spacing-lg);
+  transition: var(--apple-transition);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--apple-shadow-md);
+  }
+}
+
+.passenger-content {
+  margin-bottom: var(--apple-spacing-md);
+}
+
+.passenger-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--apple-spacing-md);
+}
+
+.passenger-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--apple-spacing-sm);
+}
+
+.passenger-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+}
+
+.default-tag {
+  font-size: 12px;
+  border-radius: var(--apple-radius-sm);
+}
+
+.passenger-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--apple-spacing-xs);
+}
+
+.detail-item {
+  font-size: 15px;
+  
+  .detail-label {
+    color: var(--apple-text-secondary);
+  }
+  
+  .detail-value {
+    color: var(--apple-text-primary);
+    font-weight: 500;
+  }
+}
+
+.passenger-actions {
+  display: flex;
+  gap: var(--apple-spacing-md);
+  padding-top: var(--apple-spacing-md);
+  border-top: 1px solid var(--apple-border-light);
+}
+
+.action-btn {
+  padding: 0;
+  height: auto;
+  font-size: 15px;
+  color: var(--apple-blue);
+  
+  &:hover {
+    color: var(--apple-blue-hover);
+  }
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: var(--apple-spacing-xxl);
+  color: var(--apple-text-secondary);
+  font-size: 17px;
+}
+

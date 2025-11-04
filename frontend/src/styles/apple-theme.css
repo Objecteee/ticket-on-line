@@ -1,0 +1,197 @@
+/**
+ * Apple风格设计系统
+ */
+
+:root {
+  /* 颜色系统 - Apple风格 */
+  --apple-bg-primary: #ffffff;
+  --apple-bg-secondary: #f5f5f7;
+  --apple-bg-tertiary: #fafafa;
+  
+  --apple-text-primary: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-text-tertiary: #86868b;
+  
+  --apple-border: rgba(0, 0, 0, 0.06);
+  --apple-border-light: rgba(0, 0, 0, 0.04);
+  
+  --apple-blue: #0071e3;
+  --apple-blue-hover: #0077ed;
+  --apple-blue-light: #e8f4fd;
+  
+  --apple-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --apple-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --apple-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  
+  --apple-radius-sm: 8px;
+  --apple-radius-md: 12px;
+  --apple-radius-lg: 20px;
+  
+  /* 间距系统 */
+  --apple-spacing-xs: 4px;
+  --apple-spacing-sm: 8px;
+  --apple-spacing-md: 16px;
+  --apple-spacing-lg: 24px;
+  --apple-spacing-xl: 32px;
+  --apple-spacing-xxl: 48px;
+  
+  /* 字体 */
+  --apple-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --apple-font-size-xs: 12px;
+  --apple-font-size-sm: 14px;
+  --apple-font-size-md: 16px;
+  --apple-font-size-lg: 18px;
+  --apple-font-size-xl: 24px;
+  --apple-font-size-xxl: 32px;
+  
+  /* 动画 */
+  --apple-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --apple-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 全局样式重置 */
+body {
+  font-family: var(--apple-font-family);
+  color: var(--apple-text-primary);
+  background: var(--apple-bg-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apple风格卡片 */
+.apple-card {
+  background: var(--apple-bg-primary);
+  border-radius: var(--apple-radius-md);
+  box-shadow: var(--apple-shadow-sm);
+  border: 1px solid var(--apple-border-light);
+  transition: var(--apple-transition);
+}
+
+.apple-card:hover {
+  box-shadow: var(--apple-shadow-md);
+}
+
+/* Apple风格按钮 */
+.apple-button {
+  border-radius: 980px;
+  font-weight: 400;
+  font-size: 17px;
+  padding: 12px 24px;
+  border: none;
+  transition: var(--apple-transition);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.apple-button-primary {
+  background: var(--apple-blue);
+  color: white;
+}
+
+.apple-button-primary:hover {
+  background: var(--apple-blue-hover);
+}
+
+.apple-button-secondary {
+  background: var(--apple-bg-secondary);
+  color: var(--apple-text-primary);
+}
+
+.apple-button-secondary:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Apple风格输入框 */
+.apple-input {
+  border-radius: var(--apple-radius-sm);
+  border: 1px solid var(--apple-border);
+  padding: 12px 16px;
+  font-size: 17px;
+  background: var(--apple-bg-primary);
+  transition: var(--apple-transition);
+}
+
+.apple-input:focus {
+  outline: none;
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+}
+
+/* Apple风格标题 */
+.apple-title {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  color: var(--apple-text-primary);
+}
+
+.apple-title-large {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.apple-subtitle {
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--apple-text-secondary);
+}
+
+/* Apple风格容器 */
+.apple-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--apple-spacing-lg);
+}
+
+/* Apple风格导航栏 */
+.apple-navbar {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--apple-border-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--apple-spacing-lg);
+}
+
+/* 淡入动画 */
+@keyframes appleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.apple-fade-in {
+  animation: appleFadeIn 0.5s ease-out;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .apple-container {
+    padding: 0 var(--apple-spacing-md);
+  }
+  
+  .apple-title {
+    font-size: 32px;
+  }
+  
+  .apple-title-large {
+    font-size: 40px;
+  }
+}
+

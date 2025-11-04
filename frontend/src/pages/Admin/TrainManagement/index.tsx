@@ -226,7 +226,7 @@ const TrainManagement: React.FC = () => {
   };
 
   return (
-    <Card title={<Title level={4} style={{ margin: 0 }}>车次管理</Title>} bordered={false} extra={<Button type="primary" onClick={onCreate}>新建车次</Button>}>
+    <Card title={<Title level={4} style={{ margin: 0 }}>车次管理</Title>} variant="borderless" extra={<Button type="primary" onClick={onCreate}>新建车次</Button>}>
       <Form form={filterForm} layout="inline" onFinish={onSearch} style={{ marginBottom: 12 }}>
         <Form.Item name="keyword">
           <Input allowClear placeholder="车次/站名关键字" style={{ width: 240 }} />
@@ -259,11 +259,11 @@ const TrainManagement: React.FC = () => {
           showTotal: (t) => `共 ${t} 条`,
         }}
         size="middle"
-        bordered={false}
+        variant="borderless"
         scroll={{ x: 1200 }}
       />
 
-      <Modal title="新建车次" open={createOpen} onOk={handleCreateOk} onCancel={() => setCreateOpen(false)} okText="创建" cancelText="取消" destroyOnClose>
+      <Modal title="新建车次" open={createOpen} onOk={handleCreateOk} onCancel={() => setCreateOpen(false)} okText="创建" cancelText="取消" destroyOnHidden>
         <Form layout="vertical" form={createForm} preserve={false}>
           <Form.Item name="train_number" label="车次号" rules={[{ required: true }]}>
             <Input placeholder="如 G1234" />

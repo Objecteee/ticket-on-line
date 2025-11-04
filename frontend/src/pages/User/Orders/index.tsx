@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { App, Button, Card, Form, Input, Modal, Select, Space, Table, Tag, Typography } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import { App, Button, Form, Input, Modal, Select, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
 import type { Order, OrderStatus } from '@/api/order';
 import { fetchMyOrders, fetchMyOrderDetail, cancelMyOrder, refundMyOrder } from '@/api/userOrder';
-
-const { Title } = Typography;
+import '@/styles/apple-theme.css';
+import './index.less';
 
 const statusColor: Record<OrderStatus, string> = {
   pending: 'default',
@@ -13,6 +12,14 @@ const statusColor: Record<OrderStatus, string> = {
   completed: 'success',
   refunded: 'blue',
   cancelled: 'error',
+};
+
+const statusText: Record<OrderStatus, string> = {
+  pending: '待支付',
+  paid: '已支付',
+  completed: '已完成',
+  refunded: '已退款',
+  cancelled: '已取消',
 };
 
 const OrdersPage: React.FC = () => {
@@ -53,13 +60,33 @@ const OrdersPage: React.FC = () => {
         width: 640,
         maskClosable: true,
         content: (
-          <div>
-            <p>车次：{data.train_number}</p>
-            <p>出行日期：{data.travel_date}</p>
-            <p>座位：{data.seat_type} × {data.ticket_count}</p>
-            <p>单价/总价：¥{data.ticket_price} / ¥{data.total_amount}</p>
-            <p>状态：{data.order_status}</p>
-            {data.payment_time && <p>支付时间：{dayjs(data.payment_time).format('YYYY-MM-DD HH:mm:ss')}</p>}
+          <div className="order-detail-modal">
+            <div className="detail-row">
+              <span>车次：</span>
+              <strong>{data.train_number}</strong>
+            </div>
+            <div className="detail-row">
+              <span>出行日期：</span>
+              <strong>{data.travel_date}</strong>
+            </div>
+            <div className="detail-row">
+              <span>座位：</span>
+              <strong>{data.seat_type} × {data.ticket_count}</strong>
+            </div>
+            <div className="detail-row">
+              <span>单价/总价：</span>
+              <strong>¥{data.ticket_price} / ¥{data.total_amount}</strong>
+            </div>
+            <div className="detail-row">
+              <span>状态：</span>
+              <Tag color={statusColor[data.order_status]}>{statusText[data.order_status]}</Tag>
+            </div>
+            {data.payment_time && (
+              <div className="detail-row">
+                <span>支付时间：</span>
+                <strong>{dayjs(data.payment_time).format('YYYY-MM-DD HH:mm:ss')}</strong>
+              </div>
+            )}
           </div>
         ),
       });
@@ -95,67 +122,101 @@ const OrdersPage: React.FC = () => {
     });
   };
 
-  const columns: ColumnsType<Order> = [
-    { title: '订单号', dataIndex: 'order_number', width: 180 },
-    { title: '车次', dataIndex: 'train_number', width: 100 },
-    { title: '出行日期', dataIndex: 'travel_date', width: 120 },
-    { title: '座位', dataIndex: 'seat_type', width: 100 },
-    { title: '张数', dataIndex: 'ticket_count', width: 80 },
-    { title: '金额(¥)', dataIndex: 'total_amount', width: 110 },
-    { title: '状态', dataIndex: 'order_status', width: 110, render: (v: OrderStatus) => <Tag color={statusColor[v]}>{v}</Tag> },
-    {
-      title: '操作',
-      fixed: 'right',
-      width: 220,
-      render: (_, record) => (
-        <Space size={8}>
-          <Button type="link" onClick={() => void viewDetail(record.id)}>详情</Button>
-          <Button type="link" disabled={record.order_status !== 'paid'} onClick={() => void doCancel(record)}>取消</Button>
-          <Button type="link" disabled={!(record.order_status === 'paid' || record.order_status === 'completed')} onClick={() => void doRefund(record)}>退款</Button>
-        </Space>
-      ),
-    },
-  ];
-
   return (
-    <Card variant="borderless">
-      <Title level={4} style={{ marginTop: 0 }}>我的订单</Title>
-      <Form layout="inline" form={filterForm} onFinish={onSearch} style={{ marginBottom: 12 }}>
-        <Form.Item name="order_status" label="状态">
-          <Select allowClear style={{ width: 160 }} options={[
-            { value: 'pending', label: '待支付' },
-            { value: 'paid', label: '已支付' },
-            { value: 'completed', label: '已完成' },
-            { value: 'refunded', label: '已退款' },
-            { value: 'cancelled', label: '已取消' },
-          ]} />
-        </Form.Item>
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit">查询</Button>
-            <Button onClick={() => { filterForm.resetFields(); setFilters({}); setPage(1); }}>重置</Button>
-          </Space>
-        </Form.Item>
-      </Form>
+    <div className="orders-page apple-fade-in">
+      <div className="page-header">
+        <h1 className="page-title">我的订单</h1>
+        <p className="page-subtitle">查看订单详情、申请退款、取消订单</p>
+      </div>
 
-      <Table<Order>
-        rowKey="id"
-        loading={loading}
-        columns={columns}
-        dataSource={data}
-        pagination={{
-          current: page,
-          pageSize,
-          total,
-          showSizeChanger: true,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-          showTotal: (t) => `共 ${t} 条`,
-        }}
-        size="middle"
-        variant="borderless"
-        scroll={{ x: 900 }}
-      />
-    </Card>
+      <div className="filter-card apple-card">
+        <Form layout="inline" form={filterForm} onFinish={onSearch}>
+          <Form.Item name="order_status" label="状态">
+            <Select allowClear style={{ width: 160 }} options={[
+              { value: 'pending', label: '待支付' },
+              { value: 'paid', label: '已支付' },
+              { value: 'completed', label: '已完成' },
+              { value: 'refunded', label: '已退款' },
+              { value: 'cancelled', label: '已取消' },
+            ]} />
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit" className="apple-button apple-button-primary">查询</Button>
+              <Button onClick={() => { filterForm.resetFields(); setFilters({}); setPage(1); }} className="apple-button apple-button-secondary">重置</Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </div>
+
+      <div className="orders-list">
+        {loading && (
+          <div className="loading-state">
+            <p>加载中...</p>
+          </div>
+        )}
+        {!loading && data.length === 0 && (
+          <div className="empty-state">
+            <p>暂无订单</p>
+          </div>
+        )}
+        {!loading && data.map((order) => (
+          <div key={order.id} className="order-card apple-card">
+            <div className="order-header">
+              <div className="order-number">{order.order_number}</div>
+              <Tag color={statusColor[order.order_status]} className="order-status">
+                {statusText[order.order_status]}
+              </Tag>
+            </div>
+            <div className="order-content">
+              <div className="order-info">
+                <div className="info-item">
+                  <span className="info-label">车次</span>
+                  <span className="info-value">{order.train_number}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">出行日期</span>
+                  <span className="info-value">{order.travel_date}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">座位</span>
+                  <span className="info-value">{order.seat_type} × {order.ticket_count}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">金额</span>
+                  <span className="info-value price">¥{order.total_amount}</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-actions">
+              <Button type="link" onClick={() => void viewDetail(order.id)} className="action-btn">详情</Button>
+              <Button type="link" disabled={order.order_status !== 'paid'} onClick={() => void doCancel(order)} className="action-btn">取消</Button>
+              <Button type="link" disabled={!(order.order_status === 'paid' || order.order_status === 'completed')} onClick={() => void doRefund(order)} className="action-btn">退款</Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {total > pageSize && (
+        <div className="pagination">
+          <Button
+            disabled={page === 1}
+            onClick={() => setPage(p => p - 1)}
+            className="apple-button apple-button-secondary"
+          >
+            上一页
+          </Button>
+          <span className="page-info">第 {page} 页 / 共 {Math.ceil(total / pageSize)} 页</span>
+          <Button
+            disabled={page * pageSize >= total}
+            onClick={() => setPage(p => p + 1)}
+            className="apple-button apple-button-secondary"
+          >
+            下一页
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -166,5 +227,3 @@ export default function Page() {
     </App>
   );
 }
-
-

@@ -58,11 +58,17 @@ const RefundsPage: React.FC = () => {
   };
 
   return (
-    <Card title={<Title level={4} style={{ margin: 0 }}>退票管理</Title>} bordered={false}>
+    <Card title={<Title level={4} style={{ margin: 0 }}>退票管理</Title>} variant="borderless">
       <Form form={filterForm} layout="inline" onFinish={onSearch} style={{ marginBottom: 12 }}>
-        <Form.Item name="dateRange" label="日期"> <DatePicker.RangePicker /> </Form.Item>
-        <Form.Item name="train_number" label="车次"> <Input allowClear /> </Form.Item>
-        <Form.Item name="destination" label="目的地"> <Input allowClear /> </Form.Item>
+        <Form.Item name="dateRange" label="日期">
+          <DatePicker.RangePicker />
+        </Form.Item>
+        <Form.Item name="train_number" label="车次">
+          <Input allowClear />
+        </Form.Item>
+        <Form.Item name="destination" label="目的地">
+          <Input allowClear />
+        </Form.Item>
         <Form.Item>
           <Space>
             <Button type="primary" htmlType="submit">查询</Button>
@@ -78,7 +84,7 @@ const RefundsPage: React.FC = () => {
         dataSource={dataSource}
         pagination={{ current: page, pageSize, total, showSizeChanger: true, onChange: (p, ps) => { setPage(p); setPageSize(ps); }, showTotal: t => `共 ${t} 条` }}
         size="middle"
-        bordered={false}
+        variant="borderless"
         scroll={{ x: 1200 }}
       />
     </Card>

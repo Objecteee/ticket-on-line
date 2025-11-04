@@ -114,13 +114,21 @@ const OrdersPage: React.FC = () => {
       icon: null,
       content: (
         <Form layout="vertical" form={refundForm}>
-          <Form.Item name="service_fee_rate" label="手续费率(%)" rules={[{ required: true }]}> 
+          <Form.Item name="service_fee_rate" label="手续费率(%)" rules={[{ required: true }]}>
             <InputNumber min={0} max={100} style={{ width: '100%' }} placeholder="如 10 表示10%" />
           </Form.Item>
-          <Form.Item name="refund_reason" label="退款原因"> <Input /> </Form.Item>
-          <Form.Item name="destination" label="目的地"> <Input /> </Form.Item>
-          <Form.Item name="route" label="线路"> <Input /> </Form.Item>
-          <Form.Item name="vehicle_type" label="车型"> <Input /> </Form.Item>
+          <Form.Item name="refund_reason" label="退款原因">
+            <Input />
+          </Form.Item>
+          <Form.Item name="destination" label="目的地">
+            <Input />
+          </Form.Item>
+          <Form.Item name="route" label="线路">
+            <Input />
+          </Form.Item>
+          <Form.Item name="vehicle_type" label="车型">
+            <Input />
+          </Form.Item>
         </Form>
       ),
       okText: '退款',
@@ -136,10 +144,14 @@ const OrdersPage: React.FC = () => {
   };
 
   return (
-    <Card title={<Title level={4} style={{ margin: 0 }}>订单管理</Title>} bordered={false}>
+    <Card title={<Title level={4} style={{ margin: 0 }}>订单管理</Title>} variant="borderless">
       <Form form={filterForm} layout="inline" onFinish={onSearch} style={{ marginBottom: 12 }}>
-        <Form.Item name="order_number" label="订单号"> <Input allowClear placeholder="支持模糊" /> </Form.Item>
-        <Form.Item name="train_number" label="车次"> <Input allowClear /> </Form.Item>
+        <Form.Item name="order_number" label="订单号">
+          <Input allowClear placeholder="支持模糊" />
+        </Form.Item>
+        <Form.Item name="train_number" label="车次">
+          <Input allowClear />
+        </Form.Item>
         <Form.Item name="order_status" label="状态">
           <Select allowClear style={{ width: 160 }} options={[
             { value: 'pending', label: '待支付' },
@@ -149,7 +161,9 @@ const OrdersPage: React.FC = () => {
             { value: 'cancelled', label: '已取消' },
           ]} />
         </Form.Item>
-        <Form.Item name="dateRange" label="出行日期"> <DatePicker.RangePicker /> </Form.Item>
+        <Form.Item name="dateRange" label="出行日期">
+          <DatePicker.RangePicker />
+        </Form.Item>
         <Form.Item>
           <Space>
             <Button type="primary" htmlType="submit">查询</Button>
@@ -165,7 +179,7 @@ const OrdersPage: React.FC = () => {
         dataSource={dataSource}
         pagination={{ current: page, pageSize, total, showSizeChanger: true, onChange: (p, ps) => { setPage(p); setPageSize(ps); }, showTotal: t => `共 ${t} 条` }}
         size="middle"
-        bordered={false}
+        variant="borderless"
         scroll={{ x: 1100 }}
       />
     </Card>

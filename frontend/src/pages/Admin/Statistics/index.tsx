@@ -106,9 +106,11 @@ const StatisticsPage: React.FC = () => {
   const onSearch = () => { void loadCharts(); };
 
   return (
-    <Card title={<Title level={4} style={{ margin: 0 }}>数据统计</Title>} bordered={false}
+    <Card title={<Title level={4} style={{ margin: 0 }}>数据统计</Title>} variant="borderless"
       extra={<Form form={form} layout="inline" onFinish={onSearch}>
-        <Form.Item name="dateRange" label="日期"><DatePicker.RangePicker /></Form.Item>
+        <Form.Item name="dateRange" label="日期">
+          <DatePicker.RangePicker />
+        </Form.Item>
         <Form.Item><Space><Button type="primary" htmlType="submit" loading={loading}>查询</Button><Button onClick={() => { form.resetFields(); void loadCharts(); }}>重置</Button></Space></Form.Item>
       </Form>}
     >

@@ -1,12 +1,9 @@
-import React from 'react';
-import { Layout, Menu, Button, Space, Typography } from 'antd';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, MessageOutlined } from '@ant-design/icons';
+import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, MessageOutlined, MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAuth } from '@/store/AuthContext';
+import '@/styles/apple-theme.css';
 import './index.less';
-
-const { Header, Content } = Layout;
-const { Text } = Typography;
 
 const menuItems = [
   { key: '/user/home', icon: <HomeOutlined />, label: '首页' },
@@ -21,37 +18,82 @@ const UserLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const selectedKey = menuItems.find(item => location.pathname.startsWith(item.key))?.key || '/user/home';
 
-  const handleMenuClick = ({ key }: { key: string }) => {
-    navigate(key);
+  const handleNavClick = (path: string) => {
+    navigate(path);
+    setMobileMenuOpen(false);
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <Header style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64, position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#1890ff', marginRight: 48 }}>在线售票系统</div>
-          <Menu
-            mode="horizontal"
-            selectedKeys={[selectedKey]}
-            items={menuItems}
-            onClick={handleMenuClick}
-            style={{ border: 'none', flex: 1 }}
-          />
+    <div className="user-layout">
+      {/* 导航栏 */}
+      <nav className="apple-navbar">
+        <div className="navbar-container">
+          <div className="navbar-logo" onClick={() => handleNavClick('/user/home')}>
+            在线售票系统
+          </div>
+          
+          {/* 桌面导航 */}
+          <div className="navbar-menu desktop">
+            {menuItems.map(item => (
+              <button
+                key={item.key}
+                className={`navbar-item ${selectedKey === item.key ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 用户信息 */}
+          <div className="navbar-user">
+            <span className="navbar-username">{user?.username || ''}</span>
+            <button className="navbar-logout" onClick={logout}>
+              <LogoutOutlined />
+            </button>
+          </div>
+
+          {/* 移动端菜单按钮 */}
+          <button 
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
+          </button>
         </div>
-        <Space style={{ display: 'flex', alignItems: 'center' }}>
-          <Text type="secondary">{user?.username || ''}</Text>
-          <Button type="link" icon={<LogoutOutlined />} onClick={logout}>退出</Button>
-        </Space>
-      </Header>
-      <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
+
+        {/* 移动端菜单 */}
+        {mobileMenuOpen && (
+          <div className="mobile-menu">
+            {menuItems.map(item => (
+              <button
+                key={item.key}
+                className={`mobile-menu-item ${selectedKey === item.key ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.key)}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+            <div className="mobile-menu-divider" />
+            <div className="mobile-menu-user">
+              <span>{user?.username || ''}</span>
+              <button onClick={logout}>退出登录</button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* 内容区域 */}
+      <main className="user-content">
         <Outlet />
-      </Content>
-    </Layout>
+      </main>
+    </div>
   );
 };
 
 export default UserLayout;
-

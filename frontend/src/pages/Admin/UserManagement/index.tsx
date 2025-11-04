@@ -211,7 +211,7 @@ const UserManagement: React.FC = () => {
       title={<Typography.Title level={4} style={{ margin: 0 }}>用户管理</Typography.Title>}
       extra={<Button type="primary" onClick={onCreate}>新建用户</Button>}
       styles={{ body: { paddingTop: 8 } }}
-      bordered={false}
+      variant="borderless"
     >
       <Form
         form={form}
@@ -251,7 +251,7 @@ const UserManagement: React.FC = () => {
           showTotal: (t) => `共 ${t} 条`,
         }}
         size="middle"
-        bordered={false}
+        variant="borderless"
         scroll={{ x: 960 }}
       />
 
@@ -262,7 +262,7 @@ const UserManagement: React.FC = () => {
         onCancel={() => setCreateOpen(false)}
         okText="创建"
         cancelText="取消"
-        destroyOnClose
+        destroyOnHidden
       >
         <Form layout="vertical" form={createForm} preserve={false}>
           <Form.Item name="username" label="用户名" rules={[{ required: true }, { min: 3, max: 20 }]}>

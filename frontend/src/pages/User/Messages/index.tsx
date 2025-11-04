@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { App, Avatar, Button, Card, Form, Input, Modal, Space, Tag, Typography } from 'antd';
+import { App, Avatar, Button, Form, Input, Space, Tag, Typography } from 'antd';
 import { MessageOutlined, UserOutlined, SendOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { fetchMessages, createMessage, type Message } from '@/api/message';
 import { useAuth } from '@/store/AuthContext';
 import dayjs from 'dayjs';
+import '@/styles/apple-theme.css';
+import './index.less';
 
-const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const MessagesPage: React.FC = () => {
@@ -59,21 +60,13 @@ const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
-      <Title level={3} style={{ marginBottom: 32, fontWeight: 400, fontSize: 28 }}>
-        留言板
-      </Title>
+    <div className="messages-page apple-fade-in">
+      <div className="page-header">
+        <h1 className="page-title">留言板</h1>
+        <p className="page-subtitle">发布留言、查看其他用户留言、管理员回复</p>
+      </div>
 
-      {/* 发布留言表单 */}
-      <Card
-        variant="borderless"
-        style={{
-          marginBottom: 32,
-          borderRadius: 12,
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-          border: '1px solid #e8e8e8',
-        }}
-      >
+      <div className="message-form-card apple-card">
         <Form form={form} layout="vertical" onFinish={onSubmit}>
           <Form.Item
             name="content"
@@ -85,12 +78,8 @@ const MessagesPage: React.FC = () => {
               rows={4}
               maxLength={500}
               showCount
-              style={{
-                fontSize: 15,
-                borderRadius: 8,
-                border: '1px solid #d2d2d7',
-                resize: 'none',
-              }}
+              className="apple-input"
+              style={{ fontSize: 15, resize: 'none' }}
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0 }}>
@@ -99,103 +88,56 @@ const MessagesPage: React.FC = () => {
               htmlType="submit"
               loading={submitting}
               icon={<SendOutlined />}
-              style={{
-                borderRadius: 22,
-                height: 40,
-                paddingLeft: 24,
-                paddingRight: 24,
-              }}
+              className="apple-button apple-button-primary"
             >
               发布留言
             </Button>
           </Form.Item>
         </Form>
-      </Card>
+      </div>
 
-      {/* 留言列表 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="messages-list">
         {messages.map((msg) => (
-          <Card
-            key={msg.id}
-            variant="borderless"
-            style={{
-              borderRadius: 12,
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-              border: '1px solid #e8e8e8',
-            }}
-            bodyStyle={{ padding: '20px 24px' }}
-          >
-            <div style={{ display: 'flex', gap: 16 }}>
-              <Avatar
-                icon={<UserOutlined />}
-                style={{ backgroundColor: '#f5f5f5', flexShrink: 0 }}
-              />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <Text strong style={{ fontSize: 15 }}>
-                    {msg.username}
-                  </Text>
-                  {msg.user_id === user?.id && getStatusTag(msg)}
-                  <Text type="secondary" style={{ fontSize: 13, marginLeft: 'auto' }}>
-                    {dayjs(msg.created_at).format('YYYY-MM-DD HH:mm')}
-                  </Text>
-                </div>
-                <Paragraph
-                  style={{
-                    marginBottom: msg.reply ? 16 : 0,
-                    fontSize: 15,
-                    lineHeight: 1.6,
-                    color: '#1d1d1f',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                  }}
-                >
-                  {msg.content}
-                </Paragraph>
-                {msg.reply && (
-                  <div
-                    style={{
-                      background: '#f5f5f7',
-                      borderRadius: 8,
-                      padding: '12px 16px',
-                      marginTop: 12,
-                      borderLeft: '3px solid #0071e3',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                      <Text strong style={{ fontSize: 13, color: '#0071e3' }}>
-                        管理员回复
-                      </Text>
-                      {msg.reply_time && (
-                        <Text type="secondary" style={{ fontSize: 12, marginLeft: 'auto' }}>
-                          {dayjs(msg.reply_time).format('YYYY-MM-DD HH:mm')}
-                        </Text>
-                      )}
-                    </div>
-                    <Text style={{ fontSize: 14, color: '#1d1d1f', whiteSpace: 'pre-wrap' }}>
-                      {msg.reply}
-                    </Text>
-                  </div>
-                )}
+          <div key={msg.id} className="message-card apple-card">
+            <div className="message-header">
+              <Avatar icon={<UserOutlined />} className="message-avatar" />
+              <div className="message-meta">
+                <span className="message-username">{msg.username}</span>
+                {msg.user_id === user?.id && getStatusTag(msg)}
+                <span className="message-time">{dayjs(msg.created_at).format('YYYY-MM-DD HH:mm')}</span>
               </div>
             </div>
-          </Card>
+            <div className="message-content">
+              {msg.content}
+            </div>
+            {msg.reply && (
+              <div className="message-reply">
+                <div className="reply-header">
+                  <span className="reply-label">管理员回复</span>
+                  {msg.reply_time && (
+                    <span className="reply-time">{dayjs(msg.reply_time).format('YYYY-MM-DD HH:mm')}</span>
+                  )}
+                </div>
+                <div className="reply-content">{msg.reply}</div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
       {messages.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: '64px 24px', color: '#86868b' }}>
-          <MessageOutlined style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }} />
-          <Text type="secondary">暂无留言</Text>
+        <div className="empty-state">
+          <MessageOutlined className="empty-icon" />
+          <p>暂无留言</p>
         </div>
       )}
 
       {total > pageSize && (
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
+        <div className="load-more">
           <Button
             onClick={() => setPage(p => p + 1)}
             disabled={page * pageSize >= total}
-            style={{ borderRadius: 22, height: 40, paddingLeft: 24, paddingRight: 24 }}
+            className="apple-button apple-button-secondary"
           >
             加载更多
           </Button>
@@ -212,4 +154,3 @@ export default function Page() {
     </App>
   );
 }
-

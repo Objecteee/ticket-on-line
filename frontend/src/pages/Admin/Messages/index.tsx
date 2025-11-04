@@ -5,7 +5,7 @@ import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined, MessageO
 import { fetchAdminMessages, approveMessage, rejectMessage, replyMessage, deleteMessage, type Message, type MessageStatus } from '@/api/message';
 import dayjs from 'dayjs';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const MessagesPage: React.FC = () => {

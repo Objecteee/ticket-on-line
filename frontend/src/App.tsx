@@ -7,6 +7,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { AuthProvider } from '@/store/AuthContext';
 import { createRouter } from '@/router';
+import '@/styles/apple-theme.css';
 import './App.less';
 
 // 创建路由实例

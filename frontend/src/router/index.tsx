@@ -49,14 +49,23 @@ export const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ chi
  * 公开路由组件 - 已登录用户不能访问（如登录页、注册页）
  */
 export const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return <Loading />;
   }
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+  if (isAuthenticated || getToken()) {
+    const token = getToken();
+    const roleFromToken: string | undefined = token ? decodeJwtPayload(token)?.role : undefined;
+    const currentRole = user?.role || roleFromToken;
+    
+    // 根据角色重定向到对应的首页
+    if (currentRole === 'admin') {
+      return <Navigate to="/admin" replace />;
+    } else if (currentRole === 'user') {
+      return <Navigate to="/user/home" replace />;
+    }
   }
 
   return children;
@@ -68,23 +77,59 @@ export const AdminRoute: React.FC<{ children: React.ReactElement }> = ({ childre
   if (loading) return <Loading />;
   const token = getToken();
   const roleFromToken: string | undefined = token ? decodeJwtPayload(token)?.role : undefined;
-  const isAdmin = (user?.role === 'admin') || (roleFromToken === 'admin');
+  const currentRole = user?.role || roleFromToken;
   const authed = isAuthenticated || !!token;
-  if (!authed) return <Navigate to="/login" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  
+  if (!authed) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // 如果是普通用户，重定向到用户首页
+  if (currentRole === 'user') {
+    return <Navigate to="/user/home" replace />;
+  }
+  
+  // 如果不是管理员，重定向到登录页重新验证
+  if (currentRole !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
+  
   return children;
 };
 
 /** 仅普通用户可访问 */
 export const UserRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
-  if (loading) return <Loading />;
+  
+  if (loading) {
+    return <Loading />;
+  }
+  
   const token = getToken();
   const roleFromToken: string | undefined = token ? decodeJwtPayload(token)?.role : undefined;
-  const isUser = (user?.role === 'user') || (roleFromToken === 'user');
-  const authed = isAuthenticated || !!token;
-  if (!authed) return <Navigate to="/login" replace />;
-  if (!isUser) return <Navigate to="/" replace />;
+  const currentRole = user?.role || roleFromToken;
+  
+  // 如果没有认证，重定向到登录页
+  if (!isAuthenticated && !token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // 如果已认证，检查角色
+  if (isAuthenticated || token) {
+    // 如果是管理员，重定向到管理员页面
+    if (currentRole === 'admin') {
+      return <Navigate to="/admin" replace />;
+    }
+    
+    // 如果是普通用户，允许访问
+    if (currentRole === 'user') {
+      return children;
+    }
+    
+    // 如果角色不明确或其他情况，重定向到登录页重新验证
+    return <Navigate to="/login" replace />;
+  }
+  
   return children;
 };
 
@@ -110,11 +155,7 @@ const routes: RouteObject[] = [
   },
   {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        <Navigate to="/user/home" replace />
-      </ProtectedRoute>
-    ),
+    element: <Navigate to="/login" replace />,
   },
   {
     path: '/forgot-password',

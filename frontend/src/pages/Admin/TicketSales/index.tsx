@@ -94,11 +94,21 @@ const TicketSalesPage: React.FC = () => {
           <Form.Item name="sale_date" label="日期" rules={[{ required: true }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="train_number" label="车次" rules={[{ required: true }]}> <Input /> </Form.Item>
-          <Form.Item name="destination" label="到站" rules={[{ required: true }]}> <Input /> </Form.Item>
-          <Form.Item name="seat_type" label="座位" rules={[{ required: true }]}> <Input /> </Form.Item>
-          <Form.Item name="ticket_count" label="张数" rules={[{ type: 'number', min: 1 }]}> <InputNumber min={1} style={{ width: '100%' }} /> </Form.Item>
-          <Form.Item name="actual_amount" label="实收(¥)" rules={[{ pattern: /^\d+(\.\d{1,2})?$/, message: '金额格式不正确' }]}> <Input /> </Form.Item>
+          <Form.Item name="train_number" label="车次" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="destination" label="到站" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="seat_type" label="座位" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="ticket_count" label="张数" rules={[{ type: 'number', min: 1 }]}>
+            <InputNumber min={1} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="actual_amount" label="实收(¥)" rules={[{ pattern: /^\d+(\.\d{1,2})?$/, message: '金额格式不正确' }]}>
+            <Input />
+          </Form.Item>
         </Form>
       ),
       okText: '保存',
@@ -132,7 +142,7 @@ const TicketSalesPage: React.FC = () => {
   };
 
   return (
-    <Card title={<Title level={4} style={{ margin: 0 }}>售票管理</Title>} bordered={false} extra={<Space><Button onClick={onExportCsv}>导出CSV</Button><Button type="primary" onClick={onCreate}>新建记录</Button></Space>}>
+    <Card title={<Title level={4} style={{ margin: 0 }}>售票管理</Title>} variant="borderless" extra={<Space><Button onClick={onExportCsv}>导出CSV</Button><Button type="primary" onClick={onCreate}>新建记录</Button></Space>}>
       <Form form={filterForm} layout="inline" onFinish={onSearch} style={{ marginBottom: 12 }}>
         <Form.Item name="dateRange" label="日期">
           <DatePicker.RangePicker />
@@ -158,11 +168,11 @@ const TicketSalesPage: React.FC = () => {
         dataSource={dataSource}
         pagination={{ current: page, pageSize, total, showSizeChanger: true, onChange: (p, ps) => { setPage(p); setPageSize(ps); }, showTotal: t => `共 ${t} 条` }}
         size="middle"
-        bordered={false}
+        variant="borderless"
         scroll={{ x: 1000 }}
       />
 
-      <Modal title="新建售票记录" open={createOpen} onOk={handleCreateOk} onCancel={() => setCreateOpen(false)} okText="创建" cancelText="取消" destroyOnClose>
+      <Modal title="新建售票记录" open={createOpen} onOk={handleCreateOk} onCancel={() => setCreateOpen(false)} okText="创建" cancelText="取消" destroyOnHidden>
         <Form layout="vertical" form={createForm} preserve={false}>
           <Form.Item name="sale_date" label="日期" rules={[{ required: true }]}>
             <DatePicker style={{ width: '100%' }} />

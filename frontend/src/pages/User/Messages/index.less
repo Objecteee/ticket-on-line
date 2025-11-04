@@ -1,0 +1,151 @@
+.messages-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--apple-spacing-xxl);
+  text-align: center;
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--apple-text-primary);
+  margin: 0 0 var(--apple-spacing-sm);
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+}
+
+.page-subtitle {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--apple-text-secondary);
+  margin: 0;
+  
+  @media (max-width: 768px) {
+    font-size: 17px;
+  }
+}
+
+.message-form-card {
+  padding: var(--apple-spacing-xl);
+  margin-bottom: var(--apple-spacing-xxl);
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--apple-spacing-md);
+}
+
+.message-card {
+  padding: var(--apple-spacing-lg);
+  transition: var(--apple-transition);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--apple-shadow-md);
+  }
+}
+
+.message-header {
+  display: flex;
+  gap: var(--apple-spacing-md);
+  margin-bottom: var(--apple-spacing-md);
+}
+
+.message-avatar {
+  flex-shrink: 0;
+  background: var(--apple-bg-secondary);
+}
+
+.message-meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--apple-spacing-sm);
+  flex-wrap: wrap;
+}
+
+.message-username {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+}
+
+.message-time {
+  font-size: 13px;
+  color: var(--apple-text-secondary);
+  margin-left: auto;
+}
+
+.message-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--apple-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: var(--apple-spacing-md);
+}
+
+.message-reply {
+  background: var(--apple-bg-secondary);
+  border-radius: var(--apple-radius-md);
+  padding: var(--apple-spacing-md);
+  margin-top: var(--apple-spacing-md);
+  border-left: 3px solid var(--apple-blue);
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: var(--apple-spacing-sm);
+  margin-bottom: var(--apple-spacing-sm);
+}
+
+.reply-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apple-blue);
+}
+
+.reply-time {
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+  margin-left: auto;
+}
+
+.reply-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--apple-text-primary);
+  white-space: pre-wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--apple-spacing-xxl);
+  color: var(--apple-text-secondary);
+  
+  .empty-icon {
+    font-size: 48px;
+    opacity: 0.3;
+    margin-bottom: var(--apple-spacing-md);
+    display: block;
+  }
+  
+  p {
+    font-size: 17px;
+    margin: 0;
+  }
+}
+
+.load-more {
+  text-align: center;
+  margin-top: var(--apple-spacing-xxl);
+}
+
