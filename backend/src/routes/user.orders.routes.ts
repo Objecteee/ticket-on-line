@@ -14,6 +14,8 @@ router.get('/', authenticate, validate([
 
 router.get('/:orderId', authenticate, validate([ param('orderId').isInt({ min: 1 }).toInt() ] as any), ctrl.getMyOrder);
 
+router.post('/:orderId/pay', authenticate, validate([ param('orderId').isInt({ min: 1 }).toInt() ] as any), ctrl.payMyOrder);
+
 router.post('/:orderId/cancel', authenticate, validate([ param('orderId').isInt({ min: 1 }).toInt() ] as any), ctrl.cancelMyOrder);
 
 router.post('/:orderId/refund', authenticate, validate([

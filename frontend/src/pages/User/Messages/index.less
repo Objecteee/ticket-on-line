@@ -1,151 +1,183 @@
-.messages-page {
-  max-width: 900px;
+.messages-page-apple {
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.page-header {
-  margin-bottom: var(--apple-spacing-xxl);
-  text-align: center;
+.message-form-section {
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
 }
 
-.page-title {
-  font-size: 48px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  color: var(--apple-text-primary);
-  margin: 0 0 var(--apple-spacing-sm);
-  
-  @media (max-width: 768px) {
-    font-size: 32px;
-  }
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
-.page-subtitle {
-  font-size: 21px;
-  font-weight: 400;
-  color: var(--apple-text-secondary);
+.form-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+.form-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 17px;
-  }
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.message-form-card {
-  padding: var(--apple-spacing-xl);
-  margin-bottom: var(--apple-spacing-xxl);
+.messages-section {
+  .section-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-xl);
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
 }
 
 .messages-list {
   display: flex;
   flex-direction: column;
-  gap: var(--apple-spacing-md);
+  gap: var(--spacing-md);
 }
 
-.message-card {
-  padding: var(--apple-spacing-lg);
-  transition: var(--apple-transition);
+.message-item {
+  padding: var(--spacing-xl);
+  transition: var(--transition-base);
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--apple-shadow-md);
+    transform: translateY(-1px);
   }
 }
 
 .message-header {
   display: flex;
-  gap: var(--apple-spacing-md);
-  margin-bottom: var(--apple-spacing-md);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .message-avatar {
   flex-shrink: 0;
-  background: var(--apple-bg-secondary);
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
 }
 
 .message-meta {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.message-user-info {
+  display: flex;
   align-items: center;
-  gap: var(--apple-spacing-sm);
-  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .message-username {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--apple-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  
+  &.approved {
+    color: var(--primary-color);
+    background: rgba(0, 122, 255, 0.1);
+  }
+  
+  &.rejected {
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+  }
+  
+  &.pending {
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+  }
 }
 
 .message-time {
-  font-size: 13px;
-  color: var(--apple-text-secondary);
-  margin-left: auto;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-regular);
 }
 
 .message-content {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--apple-text-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.647059;
+  color: var(--text-primary);
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: var(--apple-spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary-color);
 }
 
 .message-reply {
-  background: var(--apple-bg-secondary);
-  border-radius: var(--apple-radius-md);
-  padding: var(--apple-spacing-md);
-  margin-top: var(--apple-spacing-md);
-  border-left: 3px solid var(--apple-blue);
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary-color);
 }
 
 .reply-header {
   display: flex;
   align-items: center;
-  gap: var(--apple-spacing-sm);
-  margin-bottom: var(--apple-spacing-sm);
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
 }
 
-.reply-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--apple-blue);
+.reply-badge {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-color);
+  padding: 4px 10px;
+  background: rgba(0, 122, 255, 0.1);
+  border-radius: var(--radius-md);
 }
 
 .reply-time {
-  font-size: 12px;
-  color: var(--apple-text-secondary);
-  margin-left: auto;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-regular);
 }
 
 .reply-content {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--apple-text-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.647059;
+  color: var(--text-primary);
   white-space: pre-wrap;
+}
+
+.load-more-section {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
 }
 
 .empty-state {
   text-align: center;
-  padding: var(--apple-spacing-xxl);
-  color: var(--apple-text-secondary);
+  padding: var(--spacing-3xl);
   
-  .empty-icon {
-    font-size: 48px;
-    opacity: 0.3;
-    margin-bottom: var(--apple-spacing-md);
-    display: block;
-  }
-  
-  p {
-    font-size: 17px;
+  .empty-text {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
     margin: 0;
+    font-weight: var(--font-weight-regular);
   }
 }
-
-.load-more {
-  text-align: center;
-  margin-top: var(--apple-spacing-xxl);
-}
-

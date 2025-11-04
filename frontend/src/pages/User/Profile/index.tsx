@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { App, Avatar, Button, Form, Input, Space, Typography } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { App, Avatar, Button, Form, Input, Space } from 'antd';
+import { UserOutlined, SaveOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getProfile, updateProfile } from '@/api/account';
-import '@/styles/apple-theme.css';
+import '@/styles/user-theme.css';
 import './index.less';
 
 const ProfilePage: React.FC = () => {
@@ -37,24 +37,27 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="profile-page apple-fade-in">
-      <div className="profile-header">
+    <div className="profile-page-apple">
+      <div className="profile-header apple-fade-in-up">
         <Avatar
           size={100}
           icon={<UserOutlined />}
           className="profile-avatar"
         />
         <h1 className="profile-username">{userInfo.username || '用户'}</h1>
+        <p className="profile-subtitle">管理您的个人信息</p>
       </div>
 
-      <div className="profile-form-card apple-card">
-        <Form form={form} layout="vertical" onFinish={onSave}>
+      <div className="profile-form-section apple-card apple-fade-in-up">
+        <h2 className="form-title">个人资料</h2>
+        
+        <Form form={form} layout="vertical" onFinish={onSave} style={{ marginTop: 32 }}>
           <Form.Item
             name="username"
             label="用户名"
             rules={[{ required: true, min: 3, max: 20, message: '用户名长度为3-20位' }]}
           >
-            <Input placeholder="请输入用户名" className="apple-input" disabled={loading} />
+            <Input size="large" placeholder="请输入用户名" disabled={loading} />
           </Form.Item>
 
           <Form.Item
@@ -62,7 +65,7 @@ const ProfilePage: React.FC = () => {
             label="邮箱"
             rules={[{ type: 'email', message: '请输入有效的邮箱地址' }]}
           >
-            <Input placeholder="name@example.com" className="apple-input" disabled={loading} />
+            <Input size="large" placeholder="name@example.com" disabled={loading} />
           </Form.Item>
 
           <Form.Item
@@ -70,25 +73,29 @@ const ProfilePage: React.FC = () => {
             label="手机号"
             rules={[{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的11位手机号' }]}
           >
-            <Input placeholder="请输入11位手机号" maxLength={11} className="apple-input" disabled={loading} />
+            <Input size="large" placeholder="请输入11位手机号" maxLength={11} disabled={loading} />
           </Form.Item>
 
           <Form.Item style={{ marginTop: 32, marginBottom: 0 }}>
             <Space size={12} style={{ width: '100%', justifyContent: 'flex-end' }}>
               <Button
+                icon={<ReloadOutlined />}
                 onClick={() => void load()}
                 disabled={loading}
-                className="apple-button apple-button-secondary"
+                size="large"
+                className="btn-apple-secondary"
               >
-                取消
+                重置
               </Button>
               <Button
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                className="apple-button apple-button-primary"
+                icon={<SaveOutlined />}
+                size="large"
+                className="btn-apple"
               >
-                保存
+                保存更改
               </Button>
             </Space>
           </Form.Item>

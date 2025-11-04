@@ -7,7 +7,10 @@
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "seed:trains": "ts-node src/scripts/seedTrains.ts",
+    "seed:orders": "ts-node src/scripts/seedOrders.ts",
+    "seed:passengers": "ts-node src/scripts/seedPassengers.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

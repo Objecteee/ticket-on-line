@@ -14,6 +14,9 @@ export const fetchMyOrders = (params: UserOrderQuery) =>
 export const fetchMyOrderDetail = (orderId: number) =>
   request.get<Order>(`/user/orders/${orderId}`);
 
+export const payMyOrder = (orderId: number) =>
+  request.post(`/user/orders/${orderId}/pay`);
+
 export const cancelMyOrder = (orderId: number) =>
   request.post(`/user/orders/${orderId}/cancel`);
 

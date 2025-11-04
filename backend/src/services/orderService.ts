@@ -1,8 +1,10 @@
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
+import { sequelize } from '../config/database';
 import Order, { OrderStatus } from '../models/Order';
 import Refund from '../models/Refund';
 import TicketSale from '../models/TicketSale';
-import { replenishOnRefund } from './inventoryService';
+import Train from '../models/Train';
+import { replenishOnRefund, reserveOnOrder } from './inventoryService';
 
 export interface OrderListParams {
   page?: number;
@@ -39,33 +41,13 @@ export const cancelOrder = async (id: number) => {
   const order = await Order.findByPk(id);
   if (!order) throw new Error('订单不存在');
   if (order.order_status === 'cancelled' || order.order_status === 'refunded') return order;
+  if (order.order_status !== 'pending') throw new Error('只能取消待支付订单');
+  
   await order.update({ order_status: 'cancelled' });
 
-  // 回补库存
-  try {
-    await replenishOnRefund(order.train_id, order.travel_date, order.seat_type, order.ticket_count);
-  } catch {
-    // 忽略库存回补失败
-  }
-
-  // 生成负向售票记录（抵消原销量）
-  try {
-    const originalSale = await TicketSale.findOne({ where: { order_id: order.id } });
-    const dest = originalSale?.destination || '';
-    const negativeAmount = (-1 * parseFloat(order.total_amount as unknown as string)).toFixed(2);
-    await TicketSale.create({
-      sale_date: order.travel_date,
-      train_id: order.train_id,
-      train_number: order.train_number,
-      destination: dest,
-      seat_type: order.seat_type,
-      ticket_count: -order.ticket_count,
-      actual_amount: negativeAmount,
-      order_id: order.id,
-    } as any);
-  } catch {
-    // 忽略失败，不阻断取消流程
-  }
+  // 待支付订单取消时不需要回补库存（因为创建时就没扣库存）
+  // 也不需要创建负向售票记录（因为还没支付，没有售票记录）
+  
   return order;
 };
 
@@ -133,6 +115,41 @@ export const refundOrder = async (id: number, params: RefundOrderParams) => {
   }
 
   return order;
+};
+
+export const payOrder = async (id: number) => {
+  const order = await Order.findByPk(id);
+  if (!order) throw new Error('订单不存在');
+  if (order.order_status !== 'pending') throw new Error('订单状态不允许支付');
+  
+  // 检查车次是否仍然可用
+  const train = await Train.findByPk(order.train_id);
+  if (!train || train.status !== 1) throw new Error('车次不可售');
+
+  return sequelize.transaction(async (t: Transaction) => {
+    // 扣减库存
+    await reserveOnOrder(order.train_id, order.travel_date, order.seat_type, order.ticket_count);
+
+    // 更新订单状态为已支付
+    await order.update({
+      order_status: 'paid',
+      payment_time: new Date(),
+    }, { transaction: t });
+
+    // 写入售票记录（联动统计）
+    await TicketSale.create({
+      sale_date: order.travel_date,
+      train_id: order.train_id,
+      train_number: order.train_number,
+      destination: '', // 订单表没有to字段，暂时留空
+      seat_type: order.seat_type,
+      ticket_count: order.ticket_count,
+      actual_amount: order.total_amount,
+      order_id: order.id,
+    } as any, { transaction: t });
+
+    return order;
+  });
 };
 
 

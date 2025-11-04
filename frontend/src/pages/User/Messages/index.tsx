@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { App, Avatar, Button, Form, Input, Space, Tag, Typography } from 'antd';
+import { App, Avatar, Button, Form, Input, Space } from 'antd';
 import { MessageOutlined, UserOutlined, SendOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { fetchMessages, createMessage, type Message } from '@/api/message';
 import { useAuth } from '@/store/AuthContext';
 import dayjs from 'dayjs';
-import '@/styles/apple-theme.css';
+import '@/styles/user-theme.css';
 import './index.less';
 
 const { TextArea } = Input;
@@ -54,19 +54,23 @@ const MessagesPage: React.FC = () => {
   };
 
   const getStatusTag = (msg: Message) => {
-    if (msg.status === 'approved') return <Tag color="success" icon={<CheckCircleOutlined />}>已通过</Tag>;
-    if (msg.status === 'rejected') return <Tag color="error" icon={<CloseCircleOutlined />}>已拒绝</Tag>;
-    return <Tag color="default" icon={<ClockCircleOutlined />}>待审核</Tag>;
+    if (msg.status === 'approved') return <span className="status-tag approved"><CheckCircleOutlined /> 已通过</span>;
+    if (msg.status === 'rejected') return <span className="status-tag rejected"><CloseCircleOutlined /> 已拒绝</span>;
+    return <span className="status-tag pending"><ClockCircleOutlined /> 待审核</span>;
   };
 
   return (
-    <div className="messages-page apple-fade-in">
-      <div className="page-header">
+    <div className="messages-page-apple">
+      <div className="page-header apple-fade-in-up">
         <h1 className="page-title">留言板</h1>
-        <p className="page-subtitle">发布留言、查看其他用户留言、管理员回复</p>
+        <p className="page-subtitle">分享您的想法，与其他用户交流</p>
       </div>
 
-      <div className="message-form-card apple-card">
+      <div className="message-form-section apple-card apple-fade-in-up">
+        <div className="form-header">
+          <MessageOutlined className="form-icon" />
+          <h2 className="form-title">发布留言</h2>
+        </div>
         <Form form={form} layout="vertical" onFinish={onSubmit}>
           <Form.Item
             name="content"
@@ -75,11 +79,10 @@ const MessagesPage: React.FC = () => {
           >
             <TextArea
               placeholder="写下您的留言..."
-              rows={4}
+              rows={5}
               maxLength={500}
               showCount
-              className="apple-input"
-              style={{ fontSize: 15, resize: 'none' }}
+              style={{ fontSize: 15, resize: 'none', borderRadius: 12 }}
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0 }}>
@@ -88,7 +91,8 @@ const MessagesPage: React.FC = () => {
               htmlType="submit"
               loading={submitting}
               icon={<SendOutlined />}
-              className="apple-button apple-button-primary"
+              size="large"
+              className="btn-apple"
             >
               发布留言
             </Button>
@@ -96,48 +100,59 @@ const MessagesPage: React.FC = () => {
         </Form>
       </div>
 
-      <div className="messages-list">
-        {messages.map((msg) => (
-          <div key={msg.id} className="message-card apple-card">
-            <div className="message-header">
-              <Avatar icon={<UserOutlined />} className="message-avatar" />
-              <div className="message-meta">
-                <span className="message-username">{msg.username}</span>
-                {msg.user_id === user?.id && getStatusTag(msg)}
-                <span className="message-time">{dayjs(msg.created_at).format('YYYY-MM-DD HH:mm')}</span>
-              </div>
-            </div>
-            <div className="message-content">
-              {msg.content}
-            </div>
-            {msg.reply && (
-              <div className="message-reply">
-                <div className="reply-header">
-                  <span className="reply-label">管理员回复</span>
-                  {msg.reply_time && (
-                    <span className="reply-time">{dayjs(msg.reply_time).format('YYYY-MM-DD HH:mm')}</span>
-                  )}
+      <div className="messages-section">
+        <h2 className="section-title">留言列表</h2>
+        <div className="messages-list">
+          {messages.map((msg, index) => (
+            <div key={msg.id} className="message-item apple-card apple-fade-in-up" style={{ animationDelay: `${index * 0.03}s` }}>
+              <div className="message-header">
+                <Avatar
+                  size={40}
+                  icon={<UserOutlined />}
+                  className="message-avatar"
+                />
+                <div className="message-meta">
+                  <div className="message-user-info">
+                    <span className="message-username">{msg.username}</span>
+                    {msg.user_id === user?.id && getStatusTag(msg)}
+                  </div>
+                  <span className="message-time">{dayjs(msg.created_at).format('YYYY-MM-DD HH:mm')}</span>
                 </div>
-                <div className="reply-content">{msg.reply}</div>
               </div>
-            )}
-          </div>
-        ))}
+              
+              <div className="message-content">
+                {msg.content}
+              </div>
+              
+              {msg.reply && (
+                <div className="message-reply">
+                  <div className="reply-header">
+                    <span className="reply-badge">管理员回复</span>
+                    {msg.reply_time && (
+                      <span className="reply-time">{dayjs(msg.reply_time).format('YYYY-MM-DD HH:mm')}</span>
+                    )}
+                  </div>
+                  <div className="reply-content">{msg.reply}</div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {messages.length === 0 && !loading && (
-        <div className="empty-state">
-          <MessageOutlined className="empty-icon" />
-          <p>暂无留言</p>
+        <div className="empty-state apple-fade-in-up">
+          <p className="empty-text">暂无留言，成为第一个留言的用户吧</p>
         </div>
       )}
 
       {total > pageSize && (
-        <div className="load-more">
+        <div className="load-more-section">
           <Button
             onClick={() => setPage(p => p + 1)}
             disabled={page * pageSize >= total}
-            className="apple-button apple-button-secondary"
+            size="large"
+            className="btn-apple-secondary"
           >
             加载更多
           </Button>

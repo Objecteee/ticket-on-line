@@ -1,29 +1,47 @@
-.profile-page {
-  max-width: 680px;
+.profile-page-apple {
+  max-width: 600px;
   margin: 0 auto;
 }
 
 .profile-header {
   text-align: center;
-  margin-bottom: var(--apple-spacing-xxl);
-  padding-top: var(--apple-spacing-lg);
+  margin-bottom: var(--spacing-4xl);
+  padding: var(--spacing-xl) 0;
 }
 
 .profile-avatar {
-  background: var(--apple-bg-secondary);
-  border: 1px solid var(--apple-border-light);
-  margin-bottom: var(--apple-spacing-lg);
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
+  margin-bottom: var(--spacing-lg);
 }
 
 .profile-username {
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  color: var(--apple-text-primary);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-sm);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  
+  @media (max-width: 768px) {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+.profile-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
   margin: 0;
+  font-weight: var(--font-weight-regular);
 }
 
-.profile-form-card {
-  padding: var(--apple-spacing-xl);
+.profile-form-section {
+  padding: var(--spacing-2xl);
 }
 
+.form-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}

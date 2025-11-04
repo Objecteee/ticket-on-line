@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest, ApiResponse } from '../types';
-import { listOrders, getOrderById, cancelOrder, refundOrder } from '../services/orderService';
+import { listOrders, getOrderById, cancelOrder, refundOrder, payOrder } from '../services/orderService';
 
 export const listMyOrders = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -29,6 +29,17 @@ export const cancelMyOrder = async (req: AuthRequest, res: Response, next: NextF
     if (order.user_id !== req.user.userId) return res.status(403).json({ code: 403, message: '无权操作该订单' } as ApiResponse);
     const updated = await cancelOrder(orderId);
     res.json({ code: 200, message: '已取消', data: updated } as ApiResponse);
+  } catch (e) { next(e); }
+};
+
+export const payMyOrder = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ code: 401, message: '未登录' } as ApiResponse);
+    const orderId = Number(req.params.orderId);
+    const order = await getOrderById(orderId);
+    if (order.user_id !== req.user.userId) return res.status(403).json({ code: 403, message: '无权操作该订单' } as ApiResponse);
+    const updated = await payOrder(orderId);
+    res.json({ code: 200, message: '支付成功', data: updated } as ApiResponse);
   } catch (e) { next(e); }
 };
 

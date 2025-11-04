@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { App, Button, Form, Input, Modal, Space, Tag } from 'antd';
+import { App, Button, Form, Input, Modal, Space } from 'antd';
+import { UserOutlined, PlusOutlined, EditOutlined, DeleteOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import { createPassenger, deletePassenger, fetchPassengers, setDefaultPassenger, updatePassenger, clearDefaultPassenger, type Passenger } from '@/api/passenger';
-import '@/styles/apple-theme.css';
+import '@/styles/user-theme.css';
 import './index.less';
 
 const PassengersPage: React.FC = () => {
@@ -81,58 +82,67 @@ const PassengersPage: React.FC = () => {
   };
 
   return (
-    <div className="passengers-page apple-fade-in">
-      <div className="page-header">
+    <div className="passengers-page-apple">
+      <div className="page-header apple-fade-in-up">
         <h1 className="page-title">乘车人管理</h1>
-        <p className="page-subtitle">管理常用乘车人、设置默认乘车人</p>
-        <Button type="primary" onClick={handleCreate} className="apple-button apple-button-primary header-action">
+        <p className="page-subtitle">管理常用乘车人，快速购票更便捷</p>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate} size="large" className="btn-apple header-action">
           新增乘车人
         </Button>
       </div>
 
-      <div className="passengers-list">
+      <div className="passengers-grid">
         {loading && (
           <div className="loading-state">
             <p>加载中...</p>
           </div>
         )}
         {!loading && data.length === 0 && (
-          <div className="empty-state">
-            <p>暂无乘车人，点击上方按钮添加</p>
+          <div className="empty-state apple-fade-in-up">
+            <p className="empty-text">暂无乘车人，点击上方按钮添加</p>
           </div>
         )}
-        {!loading && data.map((p) => (
-          <div key={p.id} className="passenger-card apple-card">
-            <div className="passenger-content">
-              <div className="passenger-info">
-                <div className="passenger-name-row">
-                  <span className="passenger-name">{p.name}</span>
-                  {Number(p.is_default) === 1 && (
-                    <Tag color="success" className="default-tag">默认</Tag>
-                  )}
+        {!loading && data.map((p, index) => (
+          <div key={p.id} className="passenger-card apple-card apple-fade-in-up" style={{ animationDelay: `${index * 0.03}s` }}>
+            <div className="passenger-header">
+              <div className="passenger-avatar">
+                {Number(p.is_default) === 1 ? (
+                  <StarFilled className="default-star" />
+                ) : (
+                  <UserOutlined />
+                )}
+              </div>
+              {Number(p.is_default) === 1 && (
+                <span className="default-badge">默认</span>
+              )}
+            </div>
+            
+            <div className="passenger-body">
+              <h3 className="passenger-name">{p.name}</h3>
+              <div className="passenger-details">
+                <div className="detail-row">
+                  <span className="detail-label">证件号</span>
+                  <span className="detail-value">{p.id_card}</span>
                 </div>
-                <div className="passenger-details">
-                  <div className="detail-item">
-                    <span className="detail-label">证件号：</span>
-                    <span className="detail-value">{p.id_card}</span>
+                {p.phone && (
+                  <div className="detail-row">
+                    <span className="detail-label">手机号</span>
+                    <span className="detail-value">{p.phone}</span>
                   </div>
-                  {p.phone && (
-                    <div className="detail-item">
-                      <span className="detail-label">手机号：</span>
-                      <span className="detail-value">{p.phone}</span>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
+
             <div className="passenger-actions">
-              <Button type="link" onClick={() => handleEdit(p)} className="action-btn">编辑</Button>
-              {Number(p.is_default) === 1 ? (
-                <Button type="link" onClick={() => void handleClearDefault()} className="action-btn">取消默认</Button>
-              ) : (
-                <Button type="link" onClick={() => void handleSetDefault(p)} className="action-btn">设为默认</Button>
-              )}
-              <Button type="link" danger onClick={() => void handleDelete(p)} className="action-btn">删除</Button>
+              <Space>
+                <Button icon={<EditOutlined />} onClick={() => handleEdit(p)} className="btn-apple-secondary">编辑</Button>
+                {Number(p.is_default) === 1 ? (
+                  <Button onClick={() => void handleClearDefault()} className="btn-apple-secondary">取消默认</Button>
+                ) : (
+                  <Button icon={<StarOutlined />} onClick={() => void handleSetDefault(p)} className="btn-apple-secondary">设为默认</Button>
+                )}
+                <Button danger icon={<DeleteOutlined />} onClick={() => void handleDelete(p)} className="btn-apple-secondary">删除</Button>
+              </Space>
             </div>
           </div>
         ))}
@@ -149,13 +159,13 @@ const PassengersPage: React.FC = () => {
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="name" label="姓名" rules={[{ required: true, message: '请输入姓名' }]}>
-            <Input placeholder="请输入姓名" className="apple-input" />
+            <Input size="large" placeholder="请输入姓名" />
           </Form.Item>
           <Form.Item name="id_card" label="证件号" rules={[{ required: true, message: '请输入证件号' }]}>
-            <Input placeholder="请输入证件号" className="apple-input" />
+            <Input size="large" placeholder="请输入证件号" />
           </Form.Item>
           <Form.Item name="phone" label="手机号">
-            <Input placeholder="请输入手机号" className="apple-input" />
+            <Input size="large" placeholder="请输入手机号" />
           </Form.Item>
         </Form>
       </Modal>

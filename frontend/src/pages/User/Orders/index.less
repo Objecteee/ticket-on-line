@@ -1,173 +1,193 @@
-.orders-page {
-  max-width: 1200px;
+.orders-page-apple {
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: var(--apple-spacing-xxl);
+  margin-bottom: var(--spacing-3xl);
   text-align: center;
 }
 
 .page-title {
-  font-size: 48px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  color: var(--apple-text-primary);
-  margin: 0 0 var(--apple-spacing-sm);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-sm);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
   
   @media (max-width: 768px) {
-    font-size: 32px;
+    font-size: var(--font-size-4xl);
   }
 }
 
 .page-subtitle {
-  font-size: 21px;
-  font-weight: 400;
-  color: var(--apple-text-secondary);
+  font-size: var(--font-size-xl);
+  color: var(--text-secondary);
   margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 17px;
-  }
+  font-weight: var(--font-weight-regular);
 }
 
-.filter-card {
-  padding: var(--apple-spacing-lg);
-  margin-bottom: var(--apple-spacing-lg);
+.filter-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .orders-list {
   display: flex;
   flex-direction: column;
-  gap: var(--apple-spacing-md);
+  gap: var(--spacing-md);
 }
 
 .order-card {
-  padding: var(--apple-spacing-lg);
-  transition: var(--apple-transition);
+  padding: var(--spacing-xl);
+  transition: var(--transition-base);
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--apple-shadow-md);
+    transform: translateY(-1px);
   }
 }
 
-.order-header {
+.order-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--apple-spacing-md);
-  padding-bottom: var(--apple-spacing-md);
-  border-bottom: 1px solid var(--apple-border-light);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 0.5px solid var(--border-color);
 }
 
 .order-number {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--apple-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .order-status {
-  font-size: 12px;
-  border-radius: var(--apple-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
 }
 
-.order-content {
-  margin-bottom: var(--apple-spacing-md);
+.order-card-body {
+  margin-bottom: var(--spacing-lg);
 }
 
-.order-info {
+.order-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--apple-spacing-md);
+  gap: var(--spacing-lg);
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: var(--apple-spacing-xs);
-}
-
-.info-label {
-  font-size: 13px;
-  color: var(--apple-text-secondary);
-}
-
-.info-value {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--apple-text-primary);
+  gap: var(--spacing-xs);
   
-  &.price {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--apple-blue);
+  .info-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-regular);
+  }
+  
+  .info-value {
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+    
+    &.price {
+      color: var(--text-primary);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      letter-spacing: -0.01em;
+    }
+  }
+  
+  &.price-item {
+    grid-column: span 2;
   }
 }
 
-.order-actions {
+.order-card-footer {
   display: flex;
-  gap: var(--apple-spacing-md);
-  padding-top: var(--apple-spacing-md);
-  border-top: 1px solid var(--apple-border-light);
-}
-
-.action-btn {
-  padding: 0;
-  height: auto;
-  font-size: 15px;
-  color: var(--apple-blue);
+  justify-content: flex-end;
+  padding-top: var(--spacing-lg);
+  border-top: 0.5px solid var(--border-color);
   
-  &:hover {
-    color: var(--apple-blue-hover);
-  }
-  
-  &:disabled {
-    color: var(--apple-text-tertiary);
-    cursor: not-allowed;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: var(--spacing-sm);
   }
 }
 
-.pagination {
+.pagination-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--apple-spacing-lg);
-  margin-top: var(--apple-spacing-xxl);
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
 }
 
 .page-info {
-  font-size: 15px;
-  color: var(--apple-text-secondary);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-regular);
 }
 
 .loading-state,
 .empty-state {
   text-align: center;
-  padding: var(--apple-spacing-xxl);
-  color: var(--apple-text-secondary);
-  font-size: 17px;
-}
-
-.order-detail-modal {
-  .detail-row {
-    display: flex;
-    margin-bottom: var(--apple-spacing-md);
-    font-size: 15px;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-    
-    span {
-      color: var(--apple-text-secondary);
-      min-width: 100px;
-    }
-    
-    strong {
-      color: var(--apple-text-primary);
-      font-weight: 500;
-    }
+  padding: var(--spacing-3xl);
+  
+  p {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: var(--font-weight-regular);
   }
 }
 
+.order-detail-content {
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    
+    .detail-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      font-weight: var(--font-weight-regular);
+    }
+    
+    .detail-value {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      font-weight: var(--font-weight-medium);
+      
+      &.price {
+        color: var(--text-primary);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+  }
+}

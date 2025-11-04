@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { App, Button, Form, Input, Modal, Select, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
+import { FileTextOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarOutlined, EyeOutlined, CreditCardOutlined } from '@ant-design/icons';
 import type { Order, OrderStatus } from '@/api/order';
-import { fetchMyOrders, fetchMyOrderDetail, cancelMyOrder, refundMyOrder } from '@/api/userOrder';
-import '@/styles/apple-theme.css';
+import { fetchMyOrders, fetchMyOrderDetail, payMyOrder, cancelMyOrder, refundMyOrder } from '@/api/userOrder';
+import '@/styles/user-theme.css';
 import './index.less';
 
-const statusColor: Record<OrderStatus, string> = {
-  pending: 'default',
-  paid: 'processing',
-  completed: 'success',
-  refunded: 'blue',
-  cancelled: 'error',
-};
-
-const statusText: Record<OrderStatus, string> = {
-  pending: '待支付',
-  paid: '已支付',
-  completed: '已完成',
-  refunded: '已退款',
-  cancelled: '已取消',
+const statusConfig: Record<OrderStatus, { text: string; icon: React.ReactNode }> = {
+  pending: { text: '待支付', icon: <ClockCircleOutlined /> },
+  paid: { text: '已支付', icon: <CheckCircleOutlined /> },
+  completed: { text: '已完成', icon: <CheckCircleOutlined /> },
+  refunded: { text: '已退款', icon: <CloseCircleOutlined /> },
+  cancelled: { text: '已取消', icon: <CloseCircleOutlined /> },
 };
 
 const OrdersPage: React.FC = () => {
@@ -55,38 +48,48 @@ const OrdersPage: React.FC = () => {
     try {
       const { data } = await fetchMyOrderDetail(orderId);
       Modal.info({
-        title: `订单详情 ${data.order_number}`,
+        title: '订单详情',
         okText: '关闭',
-        width: 640,
+        width: 600,
         maskClosable: true,
         content: (
-          <div className="order-detail-modal">
-            <div className="detail-row">
-              <span>车次：</span>
-              <strong>{data.train_number}</strong>
-            </div>
-            <div className="detail-row">
-              <span>出行日期：</span>
-              <strong>{data.travel_date}</strong>
-            </div>
-            <div className="detail-row">
-              <span>座位：</span>
-              <strong>{data.seat_type} × {data.ticket_count}</strong>
-            </div>
-            <div className="detail-row">
-              <span>单价/总价：</span>
-              <strong>¥{data.ticket_price} / ¥{data.total_amount}</strong>
-            </div>
-            <div className="detail-row">
-              <span>状态：</span>
-              <Tag color={statusColor[data.order_status]}>{statusText[data.order_status]}</Tag>
-            </div>
-            {data.payment_time && (
-              <div className="detail-row">
-                <span>支付时间：</span>
-                <strong>{dayjs(data.payment_time).format('YYYY-MM-DD HH:mm:ss')}</strong>
+          <div className="order-detail-content">
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">订单号</span>
+                <span className="detail-value">{data.order_number}</span>
               </div>
-            )}
+              <div className="detail-item">
+                <span className="detail-label">车次</span>
+                <span className="detail-value">{data.train_number}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">出行日期</span>
+                <span className="detail-value">{data.travel_date}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">座位类型</span>
+                <span className="detail-value">{data.seat_type}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">票数</span>
+                <span className="detail-value">{data.ticket_count} 张</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">总金额</span>
+                <span className="detail-value price">¥{data.total_amount}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">状态</span>
+                <span className="detail-value">{statusConfig[data.order_status].text}</span>
+              </div>
+              {data.payment_time && (
+                <div className="detail-item">
+                  <span className="detail-label">支付时间</span>
+                  <span className="detail-value">{dayjs(data.payment_time).format('YYYY-MM-DD HH:mm:ss')}</span>
+                </div>
+              )}
+            </div>
           </div>
         ),
       });
@@ -95,20 +98,44 @@ const OrdersPage: React.FC = () => {
     }
   };
 
+  const doPay = async (order: Order) => {
+    Modal.confirm({
+      title: '确认支付',
+      content: `确认支付订单 ${order.order_number}，金额 ¥${order.total_amount}？`,
+      okText: '确认支付',
+      onOk: async () => {
+        try {
+          await payMyOrder(order.id);
+          message.success('支付成功');
+          await load();
+        } catch (e) {
+          message.error((e as Error).message || '支付失败');
+        }
+      },
+    });
+  };
+
   const doCancel = async (order: Order) => {
-    try {
-      await cancelMyOrder(order.id);
-      message.success('已取消');
-      await load();
-    } catch (e) {
-      message.error((e as Error).message || '取消失败');
-    }
+    Modal.confirm({
+      title: '确认取消',
+      content: `确认取消订单 ${order.order_number}？`,
+      okText: '确认取消',
+      onOk: async () => {
+        try {
+          await cancelMyOrder(order.id);
+          message.success('已取消');
+          await load();
+        } catch (e) {
+          message.error((e as Error).message || '取消失败');
+        }
+      },
+    });
   };
 
   const doRefund = async (order: Order) => {
     Modal.confirm({
-      title: `申请退款 - ${order.order_number}`,
-      content: '确认申请退款？默认手续费率5%。',
+      title: '申请退款',
+      content: `确认申请退款订单 ${order.order_number}？默认手续费率5%。`,
       okText: '申请退款',
       onOk: async () => {
         try {
@@ -123,15 +150,15 @@ const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="orders-page apple-fade-in">
-      <div className="page-header">
+    <div className="orders-page-apple">
+      <div className="page-header apple-fade-in-up">
         <h1 className="page-title">我的订单</h1>
-        <p className="page-subtitle">查看订单详情、申请退款、取消订单</p>
+        <p className="page-subtitle">管理您的出行订单</p>
       </div>
 
-      <div className="filter-card apple-card">
+      <div className="filter-section apple-card apple-fade-in-up">
         <Form layout="inline" form={filterForm} onFinish={onSearch}>
-          <Form.Item name="order_status" label="状态">
+          <Form.Item name="order_status" label="订单状态">
             <Select allowClear style={{ width: 160 }} options={[
               { value: 'pending', label: '待支付' },
               { value: 'paid', label: '已支付' },
@@ -142,8 +169,8 @@ const OrdersPage: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" className="apple-button apple-button-primary">查询</Button>
-              <Button onClick={() => { filterForm.resetFields(); setFilters({}); setPage(1); }} className="apple-button apple-button-secondary">重置</Button>
+              <Button type="primary" htmlType="submit" className="btn-apple">查询</Button>
+              <Button onClick={() => { filterForm.resetFields(); setFilters({}); setPage(1); }} className="btn-apple-secondary">重置</Button>
             </Space>
           </Form.Item>
         </Form>
@@ -156,64 +183,77 @@ const OrdersPage: React.FC = () => {
           </div>
         )}
         {!loading && data.length === 0 && (
-          <div className="empty-state">
-            <p>暂无订单</p>
+          <div className="empty-state apple-fade-in-up">
+            <p className="empty-text">暂无订单</p>
           </div>
         )}
-        {!loading && data.map((order) => (
-          <div key={order.id} className="order-card apple-card">
-            <div className="order-header">
-              <div className="order-number">{order.order_number}</div>
-              <Tag color={statusColor[order.order_status]} className="order-status">
-                {statusText[order.order_status]}
-              </Tag>
-            </div>
-            <div className="order-content">
-              <div className="order-info">
-                <div className="info-item">
-                  <span className="info-label">车次</span>
-                  <span className="info-value">{order.train_number}</span>
+        {!loading && data.map((order, index) => {
+          const status = statusConfig[order.order_status];
+          return (
+            <div key={order.id} className="order-card apple-card apple-fade-in-up" style={{ animationDelay: `${index * 0.03}s` }}>
+              <div className="order-card-header">
+                <div className="order-number">
+                  <FileTextOutlined />
+                  <span>{order.order_number}</span>
                 </div>
-                <div className="info-item">
-                  <span className="info-label">出行日期</span>
-                  <span className="info-value">{order.travel_date}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">座位</span>
-                  <span className="info-value">{order.seat_type} × {order.ticket_count}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">金额</span>
-                  <span className="info-value price">¥{order.total_amount}</span>
+                <div className="order-status">
+                  {status.icon}
+                  <span>{status.text}</span>
                 </div>
               </div>
+              
+              <div className="order-card-body">
+                <div className="order-info-grid">
+                  <div className="info-item">
+                    <span className="info-label">车次</span>
+                    <span className="info-value">{order.train_number}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">出行日期</span>
+                    <span className="info-value">{order.travel_date}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">座位</span>
+                    <span className="info-value">{order.seat_type}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">票数</span>
+                    <span className="info-value">{order.ticket_count} 张</span>
+                  </div>
+                  <div className="info-item price-item">
+                    <span className="info-label">总金额</span>
+                    <span className="info-value price">
+                      <DollarOutlined />
+                      {order.total_amount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="order-card-footer">
+                <Space>
+                  <Button icon={<EyeOutlined />} onClick={() => void viewDetail(order.id)} className="btn-apple-secondary">查看详情</Button>
+                  {order.order_status === 'pending' && (
+                    <>
+                      <Button type="primary" icon={<CreditCardOutlined />} onClick={() => void doPay(order)} className="btn-apple">立即支付</Button>
+                      <Button onClick={() => void doCancel(order)} className="btn-apple-secondary">取消订单</Button>
+                    </>
+                  )}
+                  {(order.order_status === 'paid' || order.order_status === 'completed') && (
+                    <Button onClick={() => void doRefund(order)} className="btn-apple">申请退款</Button>
+                  )}
+                </Space>
+              </div>
             </div>
-            <div className="order-actions">
-              <Button type="link" onClick={() => void viewDetail(order.id)} className="action-btn">详情</Button>
-              <Button type="link" disabled={order.order_status !== 'paid'} onClick={() => void doCancel(order)} className="action-btn">取消</Button>
-              <Button type="link" disabled={!(order.order_status === 'paid' || order.order_status === 'completed')} onClick={() => void doRefund(order)} className="action-btn">退款</Button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {total > pageSize && (
-        <div className="pagination">
-          <Button
-            disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
-            className="apple-button apple-button-secondary"
-          >
-            上一页
-          </Button>
+        <div className="pagination-section">
+          <Button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="btn-apple-secondary">上一页</Button>
           <span className="page-info">第 {page} 页 / 共 {Math.ceil(total / pageSize)} 页</span>
-          <Button
-            disabled={page * pageSize >= total}
-            onClick={() => setPage(p => p + 1)}
-            className="apple-button apple-button-secondary"
-          >
-            下一页
-          </Button>
+          <Button disabled={page * pageSize >= total} onClick={() => setPage(p => p + 1)} className="btn-apple-secondary">下一页</Button>
         </div>
       )}
     </div>

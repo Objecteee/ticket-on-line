@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { App, Button, DatePicker, Form, Input, InputNumber, Modal, Radio, Select, Space, Tag } from 'antd';
+import { App, Button, DatePicker, Form, Input, InputNumber, Modal, Radio, Select, Space } from 'antd';
 import dayjs from 'dayjs';
+import { SearchOutlined, CarOutlined, DollarOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { searchTickets, type TicketItem, getTicketDetail, type TicketDetailResponse } from '@/api/ticket';
 import { createOrder } from '@/api/order';
 import { fetchPassengers, type Passenger } from '@/api/passenger';
-import '@/styles/apple-theme.css';
+import '@/styles/user-theme.css';
 import './index.less';
 
 const TicketSearchPage: React.FC = () => {
@@ -97,78 +98,81 @@ const TicketSearchPage: React.FC = () => {
   };
 
   return (
-    <div className="ticket-search-page apple-fade-in">
-      <div className="page-header">
-        <h1 className="page-title">车票查询</h1>
-        <p className="page-subtitle">搜索车次、查看余票、在线订票</p>
-      </div>
-
-      <div className="search-card apple-card">
-        <Form form={form} layout="vertical" onFinish={onSearch}>
+    <div className="search-page-apple">
+      {/* 搜索区域 */}
+      <div className="search-section apple-card apple-fade-in-up">
+        <h2 className="section-title">搜索车票</h2>
+        <Form form={form} layout="vertical" onFinish={onSearch} style={{ marginTop: 32 }}>
           <div className="search-form-grid">
             <Form.Item name="date" label="出行日期" rules={[{ required: true }]}>
-              <DatePicker style={{ width: '100%' }} placeholder="选择日期" />
+              <DatePicker style={{ width: '100%' }} size="large" />
             </Form.Item>
             <Form.Item name="departure" label="出发站" rules={[{ required: true }]}>
-              <Input placeholder="请输入出发站" allowClear />
+              <Input size="large" placeholder="出发站" allowClear />
             </Form.Item>
             <Form.Item name="arrival" label="到达站" rules={[{ required: true }]}>
-              <Input placeholder="请输入到达站" allowClear />
+              <Input size="large" placeholder="到达站" allowClear />
             </Form.Item>
             <Form.Item name="train_number" label="车次号（可选）">
-              <Input placeholder="车次号" allowClear />
+              <Input size="large" placeholder="如 G1234" allowClear />
             </Form.Item>
           </div>
-          <Form.Item style={{ marginBottom: 0, marginTop: 16 }}>
-            <Space>
-              <Button type="primary" htmlType="submit" loading={loading} className="apple-button apple-button-primary">
-                查询
-              </Button>
-              <Button onClick={() => { form.resetFields(); setData([]); }} className="apple-button apple-button-secondary">
-                重置
-              </Button>
-            </Space>
+          <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+            <Button type="primary" htmlType="submit" loading={loading} size="large" className="btn-apple">
+              查询车票
+            </Button>
           </Form.Item>
         </Form>
       </div>
 
+      {/* 结果区域 */}
       {data.length > 0 && (
-        <div className="results-section">
-          <h2 className="results-title">查询结果</h2>
-          <div className="ticket-list">
+        <div className="results-section apple-fade-in-up" style={{ marginTop: 48 }}>
+          <h2 className="section-title">查询结果</h2>
+          <div className="tickets-list">
             {data.map((item) => (
-              <div key={item.train_id} className="ticket-card apple-card">
-                <div className="ticket-main">
-                  <div className="ticket-train">
-                    <span className="ticket-number">{item.train_number}</span>
-                    <Tag color={item.has_ticket ? 'success' : 'default'} className="ticket-status">
-                      {item.has_ticket ? '有票' : '无票'}
-                    </Tag>
-                  </div>
-                  <div className="ticket-route">
-                    <div className="route-item">
-                      <div className="route-time">{item.departure_time}</div>
-                      <div className="route-station">{item.departure_station}</div>
-                    </div>
-                    <div className="route-arrow">→</div>
-                    <div className="route-item">
-                      <div className="route-time">{item.arrival_time}</div>
-                      <div className="route-station">{item.arrival_station}</div>
-                    </div>
-                  </div>
-                  <div className="ticket-price">
-                    <span className="price-label">票价</span>
-                    <span className="price-value">¥{item.price_from} 起</span>
+              <div key={item.train_id} className="ticket-item apple-card">
+                <div className="ticket-header">
+                  <div className="train-number">{item.train_number}</div>
+                  <div className={`ticket-status ${item.has_ticket ? 'available' : 'unavailable'}`}>
+                    {item.has_ticket ? (
+                      <>
+                        <CheckCircleOutlined /> 有票
+                      </>
+                    ) : (
+                      <>
+                        <CloseCircleOutlined /> 无票
+                      </>
+                    )}
                   </div>
                 </div>
-                <div className="ticket-action">
+                
+                <div className="ticket-route">
+                  <div className="route-station">
+                    <div className="station-time">{item.departure_time}</div>
+                    <div className="station-name">{item.departure_station}</div>
+                  </div>
+                  <div className="route-separator">—</div>
+                  <div className="route-station">
+                    <div className="station-time">{item.arrival_time}</div>
+                    <div className="station-name">{item.arrival_station}</div>
+                  </div>
+                </div>
+
+                <div className="ticket-footer">
+                  <div className="ticket-price">
+                    <span className="price-label">票价</span>
+                    <span className="price-value">¥{item.price_from}</span>
+                    <span className="price-unit">起</span>
+                  </div>
                   <Button
                     type="primary"
+                    size="large"
                     disabled={!item.has_ticket}
                     onClick={() => void handleBook(item)}
-                    className="apple-button apple-button-primary"
+                    className="btn-apple"
                   >
-                    去订票
+                    立即订票
                   </Button>
                 </div>
               </div>
@@ -178,44 +182,47 @@ const TicketSearchPage: React.FC = () => {
       )}
 
       {data.length === 0 && !loading && (
-        <div className="empty-state">
-          <p>请输入查询条件并点击查询</p>
+        <div className="empty-state apple-fade-in-up">
+          <p className="empty-text">请输入查询条件并点击查询</p>
         </div>
       )}
 
+      {/* 订票弹窗 */}
       <Modal
-        title="订票"
+        title="选择座位与乘车人"
         open={bookOpen}
         onCancel={() => setBookOpen(false)}
         onOk={onSubmitOrder}
         confirmLoading={bookLoading}
-        width={720}
+        width={640}
         okText="确认下单"
         cancelText="取消"
       >
         {detail && (
-          <div className="book-modal">
-            <div className="book-info">
+          <div className="booking-content">
+            <div className="booking-info">
               <div className="info-row">
-                <span>车次：</span>
-                <strong>{detail.train_number}</strong>
+                <span className="info-label">车次</span>
+                <span className="info-value">{detail.train_number}</span>
               </div>
               <div className="info-row">
-                <span>出行日期：</span>
-                <strong>{bookMeta?.date}</strong>
+                <span className="info-label">出行日期</span>
+                <span className="info-value">{bookMeta?.date}</span>
               </div>
               <div className="info-row">
-                <span>路线：</span>
-                <strong>{detail.departure_station} {detail.departure_time} → {detail.arrival_station} {detail.arrival_time}</strong>
+                <span className="info-label">路线</span>
+                <span className="info-value">{detail.departure_station} {detail.departure_time} → {detail.arrival_station} {detail.arrival_time}</span>
               </div>
             </div>
-            <Form form={bookForm} layout="vertical" style={{ marginTop: 24 }}>
+            
+            <Form form={bookForm} layout="vertical" style={{ marginTop: 32 }}>
               <Form.Item label="选择乘车人">
                 <Select
                   mode="multiple"
                   value={selectedPassengerIds}
                   onChange={(ids) => { setSelectedPassengerIds(ids as number[]); if ((ids as number[]).length) bookForm.setFieldsValue({ count: (ids as number[]).length }); }}
                   placeholder="可多选，未选择则使用下方临时录入"
+                  size="large"
                   options={passengerList.map(p => ({ value: p.id, label: p.is_default ? `${p.name}（默认）` : p.name }))}
                 />
               </Form.Item>
@@ -231,13 +238,13 @@ const TicketSearchPage: React.FC = () => {
                 </Radio.Group>
               </Form.Item>
               <Form.Item name="count" label="张数" rules={[{ required: true, type: 'number', min: 1 }]} initialValue={1} extra="若选择了乘车人，将自动等于选择人数">
-                <InputNumber min={1} max={9} disabled={selectedPassengerIds.length > 0} style={{ width: '100%' }} />
+                <InputNumber min={1} max={9} disabled={selectedPassengerIds.length > 0} style={{ width: '100%' }} size="large" />
               </Form.Item>
               <Form.Item name="passenger_name" label="临时录入：姓名" rules={[{ required: selectedPassengerIds.length === 0 }]}>
-                <Input placeholder="未选择乘车人时必填" disabled={selectedPassengerIds.length > 0} />
+                <Input placeholder="未选择乘车人时必填" disabled={selectedPassengerIds.length > 0} size="large" />
               </Form.Item>
               <Form.Item name="passenger_id_card" label="临时录入：证件号" rules={[{ required: selectedPassengerIds.length === 0 }]}>
-                <Input placeholder="未选择乘车人时必填" disabled={selectedPassengerIds.length > 0} />
+                <Input placeholder="未选择乘车人时必填" disabled={selectedPassengerIds.length > 0} size="large" />
               </Form.Item>
             </Form>
           </div>
