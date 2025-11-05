@@ -9,7 +9,6 @@ import Order, { OrderStatus } from '../models/Order';
 import TicketSale from '../models/TicketSale';
 import Refund from '../models/Refund';
 import TicketInventory from '../models/TicketInventory';
-import { Op } from 'sequelize';
 
 const USER_ID = 3; // lqy用户ID
 
@@ -30,9 +29,6 @@ const orderStatusDistribution: Array<{ status: OrderStatus; count: number; descr
   { status: 'cancelled', count: 4, description: '已取消订单' },
   { status: 'refunded', count: 4, description: '已退款订单' },
 ];
-
-// 座位类型
-const seatTypes: Array<'business' | 'first' | 'second'> = ['business', 'first', 'second'];
 
 // 生成订单号
 const genOrderNo = (index: number) => {

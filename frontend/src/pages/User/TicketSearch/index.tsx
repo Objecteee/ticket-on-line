@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { App, Button, DatePicker, Form, Input, InputNumber, Modal, Radio, Select, Space } from 'antd';
 import dayjs from 'dayjs';
-import { SearchOutlined, CarOutlined, DollarOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { searchTickets, type TicketItem, getTicketDetail, type TicketDetailResponse } from '@/api/ticket';
 import { createOrder } from '@/api/order';
 import { fetchPassengers, type Passenger } from '@/api/passenger';

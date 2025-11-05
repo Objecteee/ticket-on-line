@@ -10,7 +10,9 @@
     "lint": "eslint . --ext .ts",
     "seed:trains": "ts-node src/scripts/seedTrains.ts",
     "seed:orders": "ts-node src/scripts/seedOrders.ts",
-    "seed:passengers": "ts-node src/scripts/seedPassengers.ts"
+    "seed:passengers": "ts-node src/scripts/seedPassengers.ts",
+    "seed:messages": "ts-node src/scripts/seedMessages.ts",
+    "seed:inventory": "ts-node src/scripts/seedInventory.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
