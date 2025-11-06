@@ -3,6 +3,8 @@
  */
 import express, { Application } from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
@@ -57,7 +59,30 @@ app.use('/api/admin', adminRefundsRoutes);
 app.use('/api/admin', adminStatisticsRoutes);
 app.use('/api/admin', adminMessagesRoutes);
 
-// 404处理
+// 静态文件服务：如果 public 目录存在，则提供静态文件服务
+const publicPath = path.join(__dirname, '../public');
+const publicPathExists = fs.existsSync(publicPath) && fs.existsSync(path.join(publicPath, 'index.html'));
+
+if (publicPathExists) {
+  // 提供静态文件（CSS、JS、图片等）
+  app.use(express.static(publicPath));
+  
+  // SPA路由支持：所有非API路由都返回index.html
+  app.get('*', (req, res, next) => {
+    // 排除API路由和健康检查
+    if (req.path.startsWith('/api') || req.path === '/health') {
+      return next();
+    }
+    const indexPath = path.join(publicPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      next();
+    }
+  });
+}
+
+// 404处理（仅在开发环境或API路由）
 app.use(notFoundHandler);
 
 // 错误处理中间件（必须在最后）

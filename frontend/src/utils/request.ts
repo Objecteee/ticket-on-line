@@ -1,7 +1,7 @@
 /**
  * Axios请求封装
  */
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { message } from 'antd';
 import { ApiResponse } from '@/types/api';
 import { getToken, clearAuth } from './auth';
@@ -29,8 +29,8 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(
-  (response) => {
-    const res = response.data as ApiResponse;
+  (response: AxiosResponse<ApiResponse>) => {
+    const res = response.data;
     
     // 如果code不是200，视为错误
     if (res.code !== 200) {
@@ -45,7 +45,8 @@ service.interceptors.response.use(
       return Promise.reject(new Error(res.message || '请求失败'));
     }
     
-    return res;
+    // 返回 ApiResponse，这样调用方可以直接解构 { data }
+    return res as any;
   },
   (error: AxiosError) => {
     // 处理HTTP错误

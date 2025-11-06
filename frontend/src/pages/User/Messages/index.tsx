@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { App, Avatar, Button, Form, Input, Space } from 'antd';
+import { App, Avatar, Button, Form, Input } from 'antd';
 import { MessageOutlined, UserOutlined, SendOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { fetchMessages, createMessage, type Message } from '@/api/message';
 import { useAuth } from '@/store/AuthContext';
@@ -18,7 +18,7 @@ const MessagesPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize] = useState(20);
 
   const load = async () => {
     setLoading(true);

@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { ApiResponse, PaginationResponse } from '@/types/api';
+import { PaginationResponse } from '@/types/api';
 import { User } from '@/types/user';
 
 export interface UserListQuery {

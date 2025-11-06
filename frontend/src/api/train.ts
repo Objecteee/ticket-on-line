@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { ApiResponse, PaginationResponse } from '@/types/api';
+import { PaginationResponse } from '@/types/api';
 
 export interface Train {
   id: number;

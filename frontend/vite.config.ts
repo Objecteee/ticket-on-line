@@ -10,6 +10,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // 构建配置
+  build: {
+    outDir: '../backend/public',
+    emptyOutDir: true,
+    assetsDir: 'assets',
+    sourcemap: false,
+  },
+  // 开发服务器配置
   server: {
     port: 3001,
     proxy: {

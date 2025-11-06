@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { fetchSummary, fetchTrend, fetchTop } from '@/api/statistics';
 import * as echarts from 'echarts';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();

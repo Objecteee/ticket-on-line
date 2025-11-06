@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { App, Button, Form, Input, Modal, Select, Space, Tag } from 'antd';
+import { App, Button, Form, Modal, Select, Space } from 'antd';
 import dayjs from 'dayjs';
 import { FileTextOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarOutlined, EyeOutlined, CreditCardOutlined } from '@ant-design/icons';
 import type { Order, OrderStatus } from '@/api/order';
@@ -22,7 +22,7 @@ const OrdersPage: React.FC = () => {
   const [data, setData] = useState<Order[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [filters, setFilters] = useState<{ order_status?: OrderStatus }>({});
 
   const load = async () => {

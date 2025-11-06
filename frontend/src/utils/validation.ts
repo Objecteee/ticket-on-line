@@ -23,7 +23,7 @@ export const passwordRules: Rule[] = [
 /**
  * 确认密码验证规则
  */
-export const confirmPasswordRules = (getFieldValue: any): Rule[] => [
+export const confirmPasswordRules = (_getFieldValue: any): Rule[] => [
   { required: true, message: '请确认密码' },
   ({ getFieldValue: getValue }) => ({
     validator(_: any, value: string) {

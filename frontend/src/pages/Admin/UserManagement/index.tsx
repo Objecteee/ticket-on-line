@@ -251,7 +251,7 @@ const UserManagement: React.FC = () => {
           showTotal: (t) => `共 ${t} 条`,
         }}
         size="middle"
-        variant="borderless"
+        bordered={false}
         scroll={{ x: 960 }}
       />
 

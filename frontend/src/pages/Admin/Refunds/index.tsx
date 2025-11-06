@@ -84,7 +84,7 @@ const RefundsPage: React.FC = () => {
         dataSource={dataSource}
         pagination={{ current: page, pageSize, total, showSizeChanger: true, onChange: (p, ps) => { setPage(p); setPageSize(ps); }, showTotal: t => `共 ${t} 条` }}
         size="middle"
-        variant="borderless"
+        bordered={false}
         scroll={{ x: 1200 }}
       />
     </Card>
